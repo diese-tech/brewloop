@@ -2,6 +2,23 @@
 
 This document captures product, architecture, and business-model decisions made during early BrewLoop planning.
 
+## Required Codex Session Lifecycle
+
+Every Codex session starts with context tracking:
+
+1. Read `CODEX.md`.
+2. Read `docs/DECISIONS.md`.
+3. Use the routing table below to choose any additional docs needed for the task.
+
+Every Codex session ends with context preservation:
+
+- Update `CODEX.md` when operating rules, workflow, or required context changes.
+- Update `docs/DECISIONS.md` when durable product, architecture, infrastructure, or business-model decisions are made or changed.
+- Update the relevant ADR/topical doc when the decision belongs in a more specific place.
+- Update `docs/KNOWN_GAPS.md` when risks, deferrals, or incomplete hardening remain.
+
+Important context should not live only in chat logs, commit messages, or issue comments.
+
 ## Cowork Routing Table
 
 Use this table before planning, coding, or editing. It is adapted from the Jeff Su / Cowork habit of routing the request to the right context first, then producing the smallest useful output.
@@ -182,3 +199,9 @@ V1.5:
 V2:
 
 - Expand into retention, campaigns, integrations, analytics, and possibly multi-location support.
+
+### 15. Codex session lifecycle
+
+Every Codex session begins by reading `CODEX.md` and `docs/DECISIONS.md`.
+
+Every Codex session ends by updating `CODEX.md`, `docs/DECISIONS.md`, relevant ADRs/topical docs, or `docs/KNOWN_GAPS.md` when the session changes durable context.
