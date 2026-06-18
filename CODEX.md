@@ -4,6 +4,24 @@ Codex should read this file before working on BrewLoop.
 
 BrewLoop is a QR-to-web ordering and loyalty capture app for independent cafes. It is not a full POS replacement in v1.
 
+## Required session lifecycle
+
+Every Codex session should begin by reading:
+
+1. `CODEX.md`
+2. `docs/DECISIONS.md`
+
+Then use the routing table below to load any additional docs needed for the task.
+
+Every Codex session should end by updating context when needed:
+
+- Update `CODEX.md` if the operating rules, workflow, or required context changes.
+- Update `docs/DECISIONS.md` if any durable product, architecture, infrastructure, or business-model decision was made or changed.
+- Update relevant ADRs/topical docs when the decision belongs in a more specific document.
+- Add unresolved risks or intentional deferrals to `docs/KNOWN_GAPS.md`.
+
+Do not end a session with important context trapped only in a chat summary or commit message.
+
 ## North Star
 
 A new cafe can launch a branded QR menu, loyalty program, staff order queue, and customer list in under 30 minutes with no developer involvement.
@@ -91,11 +109,13 @@ Prioritize tests for:
 
 ## Working loop
 
-1. Read this file.
-2. Route the task using the table.
-3. Read the relevant docs.
-4. Make a short plan.
-5. Implement the smallest useful change.
-6. Run relevant checks.
-7. Commit meaningful work.
-8. Summarize changed files, checks run, and remaining gaps.
+1. Read `CODEX.md`.
+2. Read `docs/DECISIONS.md`.
+3. Route the task using the table.
+4. Read the relevant supporting docs.
+5. Make a short plan.
+6. Implement the smallest useful change.
+7. Run relevant checks.
+8. Commit meaningful work.
+9. Update `CODEX.md`, `docs/DECISIONS.md`, ADRs, topical docs, or `docs/KNOWN_GAPS.md` if the session changed durable context.
+10. Summarize changed files, checks run, and remaining gaps.
