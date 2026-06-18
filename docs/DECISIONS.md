@@ -2,6 +2,29 @@
 
 This document captures product, architecture, and business-model decisions made during early BrewLoop planning.
 
+## Cowork Routing Map
+
+Use this table to decide which BrewLoop documentation module to load before planning, coding, or editing. This follows the Cowork workstation pattern: route the request to the smallest relevant context bundle instead of loading every document every time.
+
+| User intent / task | Primary module | Load first | Also load when relevant | Output expected |
+|---|---|---|---|---|
+| Define product direction, roadmap, North Star, or scope boundaries | Product Strategy | `docs/workstations/product-strategy/CLAUDE.md` | `docs/ROADMAP.md`, `docs/DECISIONS.md`, `docs/ADR/0001-product-scope.md` | Clear product decision, roadmap update, or scope guardrail |
+| Decide whether a feature belongs in v1, v1.5, v2, or later | Product Strategy | `docs/workstations/product-strategy/CLAUDE.md` | `docs/ROADMAP.md`, `docs/DECISIONS.md` | Version placement with rationale and tradeoffs |
+| Work on database schema, tenant separation, RLS, Supabase, auth, or route architecture | Architecture | `docs/workstations/architecture/CLAUDE.md` | `docs/ADR/0002-multi-tenant-architecture.md`, `docs/PRODUCTION_READINESS.md` | Architecture plan, migration direction, or implementation guardrails |
+| Work on menu setup, menu import, item CRUD, modifiers, add-ons, substitutions, or order item snapshots | Menu System | `docs/workstations/menu-system/CLAUDE.md` | `docs/MENU_ONBOARDING.md`, `docs/ADR/0004-menu-and-modifiers.md` | Menu model decision, import flow, or modifier-safe implementation plan |
+| Work on QR ordering, customer flow, staff order board, loyalty capture, or dashboard UX | Product Experience | `docs/workstations/product-experience/CLAUDE.md` | `docs/ROADMAP.md`, `docs/ADR/0001-product-scope.md`, `docs/MENU_ONBOARDING.md` | User flow, screen plan, acceptance criteria, or UX guardrails |
+| Work on testing, deployment, production hardening, observability, secrets, or launch checklist | Production Readiness | `docs/workstations/production-readiness/CLAUDE.md` | `docs/PRODUCTION_READINESS.md`, `docs/ADR/0002-multi-tenant-architecture.md` | Test plan, hardening checklist, or deployment readiness plan |
+| Decide SaaS-hosted vs client-owned deployment, pricing package implications, handoff, warranty, or provider setup | Business Model / Infrastructure | `docs/workstations/business-model/CLAUDE.md` | `docs/CLIENT_OWNED_INFRASTRUCTURE.md`, `docs/ADR/0003-hosting-and-business-model.md` | Business model recommendation, client setup flow, or contract/support boundary |
+| Update project memory, summarize decisions, create ADRs, or prevent documentation drift | Documentation Ops | `docs/workstations/documentation-ops/CLAUDE.md` | `docs/DECISIONS.md`, existing ADRs, touched docs | Updated docs with decision/rationale/consequences |
+
+Routing rules:
+
+- Load the smallest module that matches the task.
+- Prefer ADRs for accepted decisions and roadmap docs for future sequencing.
+- If a request crosses modules, name the primary module first and list supporting modules.
+- Do not reopen settled decisions unless new evidence or pilot feedback changes the tradeoff.
+- When a new durable decision is made, update `docs/DECISIONS.md` and add or update an ADR when the decision affects architecture, product scope, or business model.
+
 ## 1. Product wedge
 
 Decision:
