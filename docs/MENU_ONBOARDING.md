@@ -124,6 +124,57 @@ Every cafe should use the same menu tables, same route structure, and same compo
 
 If a new cafe requires a code change just to show its menu, the architecture is drifting in the wrong direction.
 
+## Future modifier strategy
+
+Drink customization matters for real cafe usage, but it should not block the v1 proof of workflow.
+
+Examples:
+
+- Milk type:
+  - whole milk
+  - oat milk
+  - almond milk
+  - soy milk
+- Temperature:
+  - hot
+  - iced
+- Size:
+  - small
+  - medium
+  - large
+- Add-ons:
+  - whipped cream
+  - cold foam
+  - espresso shot
+  - syrup flavor
+- Removals/substitutions:
+  - no whipped cream
+  - no ice
+  - half sweet
+
+The long-term model should support reusable modifier groups instead of hardcoding custom drink logic per item.
+
+Possible future tables:
+
+- `modifier_groups`
+- `modifiers`
+- `menu_item_modifier_groups`
+- `order_item_modifiers`
+
+Design direction:
+
+- A modifier group defines a set of choices, such as `Milk Type`.
+- A modifier belongs to a group, such as `Oat Milk`.
+- A menu item can attach one or more modifier groups.
+- An order item stores selected modifiers as snapshots so historical orders remain accurate even if the menu changes later.
+- Some modifier groups can be optional.
+- Some modifier groups can be required.
+- Some modifiers can add cost.
+
+Do not build this in v1 unless the initial pilot absolutely requires it.
+
+For v1, a simple `notes` field on the order can cover edge cases like `oat milk, no whip, add cold foam`. That is not scalable long term, but it is acceptable for early validation.
+
 ## Future menu features
 
 Possible post-MVP additions:
