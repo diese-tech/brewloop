@@ -1,5 +1,9 @@
 create extension if not exists "pgcrypto";
 
+create schema if not exists private;
+revoke all on schema private from public;
+grant usage on schema private to anon, authenticated;
+
 create table public.cafes (
   id uuid primary key default gen_random_uuid(),
   name text not null,
@@ -114,25 +118,32 @@ create index cafe_users_user_id_idx on public.cafe_users(user_id);
 create index customers_cafe_id_idx on public.customers(cafe_id);
 create index menu_categories_cafe_id_idx on public.menu_categories(cafe_id);
 create index menu_items_cafe_id_idx on public.menu_items(cafe_id);
+create index menu_items_category_id_idx on public.menu_items(category_id);
 create index orders_cafe_status_idx on public.orders(cafe_id, status);
+create index orders_customer_id_idx on public.orders(customer_id);
+create index order_items_order_id_idx on public.order_items(order_id);
+create index order_items_menu_item_id_idx on public.order_items(menu_item_id);
 create index loyalty_accounts_cafe_id_idx on public.loyalty_accounts(cafe_id);
+create index loyalty_accounts_customer_id_idx on public.loyalty_accounts(customer_id);
+create index loyalty_transactions_account_id_idx on public.loyalty_transactions(account_id);
+create index promotions_cafe_id_idx on public.promotions(cafe_id);
 
-create or replace function public.is_cafe_member(target_cafe_id uuid)
+create or replace function private.is_cafe_member(target_cafe_id uuid)
 returns boolean
 language sql
 stable
 security definer
-set search_path = public
+set search_path = ''
 as $$
   select exists (
     select 1
     from public.cafe_users
     where cafe_id = target_cafe_id
-      and user_id = auth.uid()
+      and user_id = (select auth.uid())
   );
 $$;
 
-create or replace function public.has_cafe_role(
+create or replace function private.has_cafe_role(
   target_cafe_id uuid,
   allowed_roles text[]
 )
@@ -140,16 +151,57 @@ returns boolean
 language sql
 stable
 security definer
-set search_path = public
+set search_path = ''
 as $$
   select exists (
     select 1
     from public.cafe_users
     where cafe_id = target_cafe_id
-      and user_id = auth.uid()
+      and user_id = (select auth.uid())
       and role = any(allowed_roles)
   );
 $$;
+
+create or replace function private.order_exists(target_order_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1
+    from public.orders
+    where id = target_order_id
+  );
+$$;
+
+create or replace function private.customer_belongs_to_cafe(
+  target_customer_id uuid,
+  target_cafe_id uuid
+)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1
+    from public.customers
+    where id = target_customer_id
+      and cafe_id = target_cafe_id
+  );
+$$;
+
+revoke all on function private.is_cafe_member(uuid) from public;
+revoke all on function private.has_cafe_role(uuid, text[]) from public;
+revoke all on function private.order_exists(uuid) from public;
+revoke all on function private.customer_belongs_to_cafe(uuid, uuid) from public;
+grant execute on function private.is_cafe_member(uuid) to authenticated;
+grant execute on function private.has_cafe_role(uuid, text[]) to anon, authenticated;
+grant execute on function private.order_exists(uuid) to anon, authenticated;
+grant execute on function private.customer_belongs_to_cafe(uuid, uuid) to anon, authenticated;
 
 alter table public.cafes enable row level security;
 alter table public.profiles enable row level security;
@@ -164,122 +216,188 @@ alter table public.loyalty_transactions enable row level security;
 alter table public.promotions enable row level security;
 
 create policy "cafes are publicly readable"
-on public.cafes for select using (true);
+on public.cafes for select
+to anon, authenticated
+using (true);
 
 create policy "owners update cafe settings"
 on public.cafes for update
-using (public.has_cafe_role(id, array['owner']))
-with check (public.has_cafe_role(id, array['owner']));
+to authenticated
+using ((select private.has_cafe_role(id, array['owner'])))
+with check ((select private.has_cafe_role(id, array['owner'])));
 
 create policy "users read own profile"
-on public.profiles for select using (id = auth.uid());
+on public.profiles for select
+to authenticated
+using (id = (select auth.uid()));
 
 create policy "users update own profile"
-on public.profiles for update using (id = auth.uid()) with check (id = auth.uid());
+on public.profiles for update
+to authenticated
+using (id = (select auth.uid()))
+with check (id = (select auth.uid()));
 
 create policy "members read cafe memberships"
-on public.cafe_users for select using (user_id = auth.uid());
+on public.cafe_users for select
+to authenticated
+using (user_id = (select auth.uid()));
 
 create policy "owners manage cafe memberships"
 on public.cafe_users for all
-using (public.has_cafe_role(cafe_id, array['owner']))
-with check (public.has_cafe_role(cafe_id, array['owner']));
+to authenticated
+using ((select private.has_cafe_role(cafe_id, array['owner'])))
+with check ((select private.has_cafe_role(cafe_id, array['owner'])));
 
 create policy "public creates customers"
-on public.customers for insert with check (
+on public.customers for insert
+to anon, authenticated
+with check (
   exists (select 1 from public.cafes where id = cafe_id)
 );
 
 create policy "staff reads customers"
-on public.customers for select using (public.is_cafe_member(cafe_id));
+on public.customers for select
+to authenticated
+using ((select private.is_cafe_member(cafe_id)));
 
 create policy "public reads menu categories"
-on public.menu_categories for select using (true);
+on public.menu_categories for select
+to anon, authenticated
+using (true);
 
 create policy "owners and managers manage categories"
 on public.menu_categories for all
-using (public.has_cafe_role(cafe_id, array['owner', 'manager']))
-with check (public.has_cafe_role(cafe_id, array['owner', 'manager']));
+to authenticated
+using ((select private.has_cafe_role(cafe_id, array['owner', 'manager'])))
+with check ((select private.has_cafe_role(cafe_id, array['owner', 'manager'])));
 
 create policy "public reads active menu items"
-on public.menu_items for select using (
-  is_active or public.has_cafe_role(cafe_id, array['owner', 'manager'])
+on public.menu_items for select
+to anon, authenticated
+using (
+  is_active or (select private.has_cafe_role(cafe_id, array['owner', 'manager']))
 );
 
 create policy "owners and managers manage items"
 on public.menu_items for all
-using (public.has_cafe_role(cafe_id, array['owner', 'manager']))
-with check (public.has_cafe_role(cafe_id, array['owner', 'manager']));
+to authenticated
+using ((select private.has_cafe_role(cafe_id, array['owner', 'manager'])))
+with check ((select private.has_cafe_role(cafe_id, array['owner', 'manager'])));
 
 create policy "public creates orders"
-on public.orders for insert with check (
+on public.orders for insert
+to anon, authenticated
+with check (
   status = 'new'
   and exists (select 1 from public.cafes where id = cafe_id)
 );
 
 create policy "staff reads orders"
-on public.orders for select using (public.is_cafe_member(cafe_id));
+on public.orders for select
+to authenticated
+using ((select private.is_cafe_member(cafe_id)));
 
 create policy "staff updates orders"
 on public.orders for update
-using (public.is_cafe_member(cafe_id))
-with check (public.is_cafe_member(cafe_id));
+to authenticated
+using ((select private.is_cafe_member(cafe_id)))
+with check ((select private.is_cafe_member(cafe_id)));
 
 create policy "public creates order items"
-on public.order_items for insert with check (
-  exists (select 1 from public.orders where id = order_id)
-);
+on public.order_items for insert
+to anon, authenticated
+with check ((select private.order_exists(order_id)));
 
 create policy "staff reads order items"
-on public.order_items for select using (
+on public.order_items for select
+to authenticated
+using (
   exists (
     select 1 from public.orders
     where orders.id = order_id
-      and public.is_cafe_member(orders.cafe_id)
+      and (select private.is_cafe_member(orders.cafe_id))
   )
 );
 
 create policy "public creates loyalty accounts"
-on public.loyalty_accounts for insert with check (
-  exists (
-    select 1 from public.customers
-    where customers.id = customer_id
-      and customers.cafe_id = cafe_id
-  )
-);
+on public.loyalty_accounts for insert
+to anon, authenticated
+with check ((select private.customer_belongs_to_cafe(customer_id, cafe_id)));
 
 create policy "staff reads loyalty accounts"
-on public.loyalty_accounts for select using (public.is_cafe_member(cafe_id));
+on public.loyalty_accounts for select
+to authenticated
+using ((select private.is_cafe_member(cafe_id)));
 
 create policy "staff manages loyalty accounts"
 on public.loyalty_accounts for update
-using (public.is_cafe_member(cafe_id))
-with check (public.is_cafe_member(cafe_id));
+to authenticated
+using ((select private.is_cafe_member(cafe_id)))
+with check ((select private.is_cafe_member(cafe_id)));
 
 create policy "staff reads loyalty transactions"
-on public.loyalty_transactions for select using (
+on public.loyalty_transactions for select
+to authenticated
+using (
   exists (
     select 1 from public.loyalty_accounts
     where loyalty_accounts.id = account_id
-      and public.is_cafe_member(loyalty_accounts.cafe_id)
+      and (select private.is_cafe_member(loyalty_accounts.cafe_id))
   )
 );
 
 create policy "staff creates loyalty transactions"
-on public.loyalty_transactions for insert with check (
+on public.loyalty_transactions for insert
+to authenticated
+with check (
   exists (
     select 1 from public.loyalty_accounts
     where loyalty_accounts.id = account_id
-      and public.is_cafe_member(loyalty_accounts.cafe_id)
+      and (select private.is_cafe_member(loyalty_accounts.cafe_id))
   )
 );
 
 create policy "public reads active promotions"
-on public.promotions for select using (active);
+on public.promotions for select
+to anon, authenticated
+using (active);
 
 create policy "owners and managers manage promotions"
 on public.promotions for all
-using (public.has_cafe_role(cafe_id, array['owner', 'manager']))
-with check (public.has_cafe_role(cafe_id, array['owner', 'manager']));
+to authenticated
+using ((select private.has_cafe_role(cafe_id, array['owner', 'manager'])))
+with check ((select private.has_cafe_role(cafe_id, array['owner', 'manager'])));
+
+grant select on public.cafes, public.menu_categories, public.menu_items, public.promotions
+to anon;
+grant insert on public.customers, public.orders, public.order_items, public.loyalty_accounts
+to anon;
+
+grant select, update on public.cafes, public.profiles
+to authenticated;
+grant select, insert, update, delete on
+  public.cafe_users,
+  public.menu_categories,
+  public.menu_items,
+  public.promotions
+to authenticated;
+grant select, insert on public.customers, public.order_items, public.loyalty_transactions
+to authenticated;
+grant select, insert, update on public.orders, public.loyalty_accounts
+to authenticated;
+
+grant all on
+  public.cafes,
+  public.profiles,
+  public.cafe_users,
+  public.customers,
+  public.menu_categories,
+  public.menu_items,
+  public.orders,
+  public.order_items,
+  public.loyalty_accounts,
+  public.loyalty_transactions,
+  public.promotions
+to service_role;
 
 alter publication supabase_realtime add table public.orders;

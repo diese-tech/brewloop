@@ -59,7 +59,7 @@ The service-role key must remain server-only. Never expose it through a
 1. Create a Supabase project.
 2. Install the Supabase CLI if it is not already available.
 3. Link the repository to the project.
-4. Apply `supabase/migrations/202606180001_initial_schema.sql`.
+4. Apply `supabase/migrations/20260619011020_initial_schema.sql`.
 5. Run `supabase/seed.sql` for the Demo Coffee records.
 6. Add the project URL and anon key to `.env.local`.
 
