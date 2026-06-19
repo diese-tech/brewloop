@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BrewLoop
 
-## Getting Started
+BrewLoop is a QR-to-web ordering and loyalty capture app for independent cafés.
+It provides a branded public menu, pickup/table order flow, staff queue, owner
+menu tools, customer capture, and basic visit rewards without replacing the
+café's existing POS.
 
-First, run the development server:
+## Current MVP
+
+- Public demo café at `/cafe/demo-coffee`
+- Mobile ordering at `/cafe/demo-coffee/order`
+- Table QR support, for example `/cafe/demo-coffee/order?t=12`
+- Phone/email rewards at `/cafe/demo-coffee/rewards`
+- Staff status board at `/staff/orders`
+- Owner dashboard and menu management under `/dashboard`
+- Supabase schema, tenant-aware RLS policies, Realtime publication, and seed data
+- Credential-free demo mode backed by browser storage
+
+Demo mode lets the complete UI run before Supabase is configured. Orders placed
+in one tab appear on the staff board in the same browser. Demo menu and rewards
+changes also persist in that browser.
+
+## Local development
+
+Requirements:
+
+- Node.js 20.9 or newer
+- npm
 
 ```bash
+npm install
+copy .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Useful checks:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npm test
+npm run build
+```
 
-## Learn More
+## Environment variables
 
-To learn more about Next.js, take a look at the following resources:
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The service-role key must remain server-only. Never expose it through a
+`NEXT_PUBLIC_` variable or initialize a service-role client in browser code.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Supabase setup
 
-## Deploy on Vercel
+1. Create a Supabase project.
+2. Install the Supabase CLI if it is not already available.
+3. Link the repository to the project.
+4. Apply `supabase/migrations/202606180001_initial_schema.sql`.
+5. Run `supabase/seed.sql` for the Demo Coffee records.
+6. Add the project URL and anon key to `.env.local`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The migration creates the issue-defined tables, constraints, indexes, RLS
+policies, role helper functions, and an `orders` Realtime publication.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The UI currently uses the local demo adapter. Replacing that adapter with the
+included lazy Supabase browser/server clients is the next integration milestone;
+see `docs/KNOWN_GAPS.md`.
+
+## Product boundaries
+
+V1 intentionally excludes payments, Telegram, native apps, inventory, payroll,
+deep POS integrations, and complex marketing campaigns. See `CODEX.md` and the
+ADRs in `docs/ADR/` for the durable product and architecture decisions.

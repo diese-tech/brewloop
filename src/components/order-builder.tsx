@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Check, Minus, Plus, ShoppingBag } from "lucide-react";
 
@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { calculateOrderTotal, formatCurrency } from "@/lib/commerce";
-import { demoStore } from "@/lib/demo-store";
+import { demoStore, STORE_EVENT } from "@/lib/demo-store";
 import type { Cafe, CafeOrder, OrderType } from "@/lib/types";
 
 export function OrderBuilder({
@@ -30,10 +30,22 @@ export function OrderBuilder({
   const [customerPhone, setCustomerPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [confirmation, setConfirmation] = useState<string | null>(null);
+  const [menuItems, setMenuItems] = useState(cafe.items);
+
+  useEffect(() => {
+    const syncMenu = () => setMenuItems(demoStore.getMenu());
+    syncMenu();
+    window.addEventListener(STORE_EVENT, syncMenu);
+    window.addEventListener("storage", syncMenu);
+    return () => {
+      window.removeEventListener(STORE_EVENT, syncMenu);
+      window.removeEventListener("storage", syncMenu);
+    };
+  }, []);
 
   const orderItems = useMemo(
     () =>
-      cafe.items
+      menuItems
         .filter((item) => item.isActive && quantities[item.id])
         .map((item) => ({
           menuItemId: item.id,
@@ -41,7 +53,7 @@ export function OrderBuilder({
           quantity: quantities[item.id],
           unitPriceCents: item.priceCents,
         })),
-    [cafe.items, quantities],
+    [menuItems, quantities],
   );
   const total = calculateOrderTotal(orderItems);
 
@@ -81,7 +93,7 @@ export function OrderBuilder({
     <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
       <div className="space-y-10">
         {cafe.categories.map((category) => {
-          const items = cafe.items.filter(
+          const items = menuItems.filter(
             (item) => item.categoryId === category.id && item.isActive,
           );
           return (
