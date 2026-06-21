@@ -106,6 +106,5 @@ Negative:
 
 ## Follow-ups
 
-- Add RLS policies during scaffold.
-- Add tenant isolation tests where feasible.
-- Document any incomplete RLS gaps in `docs/KNOWN_GAPS.md`.
+- Add automated tenant-isolation tests.
+- Complete an adversarial review of the deployed RLS policies.

@@ -10,6 +10,10 @@ BrewLoop was inspired by a Reddit post describing a QR ordering and loyalty syst
 
 Dustin is connected with local coffee shops, which creates an opportunity to validate a local-business product through direct relationships.
 
+Source context:
+
+- [Sold a $700 app to a coffee shop. I didn't write it, Claude did.](https://www.reddit.com/r/AI_Agents/s/ch7ALPwnks)
+
 ## Decision
 
 BrewLoop will start as a QR-to-web ordering and loyalty capture platform for independent cafes.
@@ -84,6 +88,5 @@ Negative:
 
 ## Follow-ups
 
-- Document known gaps in `docs/KNOWN_GAPS.md`.
 - Revisit payments only after a pilot validates core demand.
 - Revisit messaging after phone/email opt-in and compliance requirements are defined.

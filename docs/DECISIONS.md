@@ -19,9 +19,11 @@ Every Codex session ends with context preservation:
 
 Important context should not live only in chat logs, commit messages, or issue comments.
 
-## Cowork Routing Table
+## Codex Routing Table
 
-Use this table before planning, coding, or editing. It is adapted from the Jeff Su / Cowork habit of routing the request to the right context first, then producing the smallest useful output.
+Use this table as BrewLoop's Codex context-routing workflow before planning,
+coding, or editing. Route the request to the relevant project documentation,
+then produce the smallest useful output.
 
 | Task type | Route | Read first | Behavior | Output |
 |---|---|---|---|---|
@@ -76,9 +78,9 @@ Replacement model:
 - Phone/email for loyalty signup
 - Email/SMS as future optional campaign channels
 
-### 4. No payments in v1
+### 4. No payments in the current pilot
 
-BrewLoop v1 avoids payment processing.
+BrewLoop's current pilot avoids payment processing.
 
 Reason:
 
@@ -113,7 +115,7 @@ Per-cafe differences should come from database configuration:
 
 ### 7. Drink modifiers are deferred but planned
 
-V1 uses an order notes field for custom requests.
+The current pilot uses an order notes field for custom requests.
 
 Future model:
 
@@ -188,11 +190,7 @@ Square, Toast, Clover, SMS, email campaigns, and wallet passes wait until the st
 
 ### 14. Roadmap summary
 
-V1:
-
-- Prove the core QR ordering + loyalty capture workflow.
-
-V1.5:
+Current phase:
 
 - Make onboarding and pilot usage practical for real cafes.
 

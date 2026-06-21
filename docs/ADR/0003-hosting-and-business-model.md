@@ -115,6 +115,5 @@ Negative:
 
 ## Follow-ups
 
-- Document client-owned setup in `docs/CLIENT_OWNED_INFRASTRUCTURE.md`.
 - Create onboarding checklist for both SaaS-hosted and client-owned pilots.
 - Decide pricing after first pilot conversations.

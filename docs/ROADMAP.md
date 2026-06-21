@@ -40,43 +40,9 @@ BrewLoop starts with a narrow wedge:
 
 > QR-to-web ordering plus loyalty capture for local cafes.
 
-This is intentionally smaller than a full cafe operating system. The MVP should prove that shops value customer capture and repeat-visit loops before expanding into more complex operational features.
-
-## V1: Proof of workflow
-
-### Purpose
-
-Prove the core workflow with a demo-ready product that a local cafe owner can understand quickly.
-
-### Scope
-
-- Multi-tenant cafe model
-- Public cafe page
-- QR-to-web menu
-- Pickup/table orders
-- Staff order board
-- Owner menu management
-- Customer capture
-- Basic loyalty account/progress
-- Demo cafe seed data
-- ADRs and known gaps
-
-### Explicitly excluded
-
-- Payments
-- SMS marketing
-- POS integrations
-- Native mobile apps
-- Telegram dependency
-- Advanced analytics
-- Complex campaign builders
-- Multi-location support
-
-### Success criteria
-
-- One real local cafe owner understands the value within a 5-minute demo.
-- A customer can scan, browse, order, and join rewards without creating a full account.
-- Staff can operate the queue with minimal training.
+This is intentionally smaller than a full cafe operating system. The pilot
+should validate that shops value customer capture and repeat-visit loops before
+the product expands into more complex operational features.
 
 ## V1.5: Sellable pilot
 
@@ -133,9 +99,8 @@ Make BrewLoop usable for real local shops with minimal hand-holding.
 - Empty states
 - Auth guard middleware
 - Environment validation
-- RLS hardening pass
-- Seed script separated from migrations
-- Basic automated tests
+- Database integration and tenant-isolation tests
+- Playwright smoke tests
 - Vercel deployment checklist
 
 ### Success criteria
