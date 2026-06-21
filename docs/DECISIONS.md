@@ -30,7 +30,7 @@ then produce the smallest useful output.
 | Product direction, roadmap, North Star, feature timing | Product Strategy | `docs/ROADMAP.md`, `docs/ADR/0001-product-scope.md`, `docs/DECISIONS.md` | Protect the QR ordering + loyalty wedge. Place features in v1, v1.5, v2, or later. | Recommendation, tradeoffs, next action |
 | Schema, tenant separation, Supabase, auth, RLS, routes | Architecture | `docs/ADR/0002-multi-tenant-architecture.md`, `docs/PRODUCTION_READINESS.md`, `docs/DECISIONS.md` | Keep new businesses configuration-driven. Preserve `cafe_id` tenant boundaries. | Architecture plan or implementation constraints |
 | Menus, imports, item CRUD, drink options, add-ons, item snapshots | Menu System | `docs/MENU_ONBOARDING.md`, `docs/ADR/0004-menu-and-modifiers.md`, `docs/DECISIONS.md` | Keep menus internal to BrewLoop. Use notes in v1. Save structured option groups for later validation. | Menu model decision or import plan |
-| QR customer flow, staff order board, owner dashboard, loyalty UX | Product Experience | `docs/ROADMAP.md`, `docs/ADR/0001-product-scope.md`, `docs/MENU_ONBOARDING.md` | Keep flows mobile-first, low-friction, and demoable for a local cafe owner. | Flow, acceptance criteria, or screen plan |
+| Prototype UI, QR customer flow, staff order board, owner dashboard, loyalty UX | Product Experience | `design.md`, `docs/ROADMAP.md`, `docs/ADR/0001-product-scope.md`, `docs/MENU_ONBOARDING.md` | Keep flows mobile-first, low-friction, and demoable for a local cafe owner. Use `design.md` as the prototype source of truth. | Flow, acceptance criteria, screen plan, or UI implementation constraints |
 | Tests, deployment, hardening, logging, launch readiness | Production Readiness | `docs/PRODUCTION_READINESS.md`, `docs/ADR/0002-multi-tenant-architecture.md`, `docs/DECISIONS.md` | Make pilots safe and testable without enterprise overhead. | Checklist, test plan, or readiness review |
 | SaaS-hosted vs client-owned deployment, pricing, warranty, provider accounts | Business Model / Infrastructure | `docs/CLIENT_OWNED_INFRASTRUCTURE.md`, `docs/ADR/0003-hosting-and-business-model.md`, `docs/DECISIONS.md` | Default to SaaS-hosted. Treat client-owned deployment as premium/custom. | Package recommendation or handoff flow |
 | Decision logging, ADR updates, doc cleanup, handoff material | Documentation Ops | `docs/DECISIONS.md`, relevant ADRs, touched topical docs | Put durable decisions here. Use ADRs for scope, architecture, infra, or business-model choices. | Updated decision, rationale, consequences |
@@ -203,3 +203,11 @@ V2:
 Every Codex session begins by reading `CODEX.md` and `docs/DECISIONS.md`.
 
 Every Codex session ends by updating `CODEX.md`, `docs/DECISIONS.md`, relevant ADRs/topical docs, or `docs/KNOWN_GAPS.md` when the session changes durable context.
+
+### 16. Prototype design brief
+
+Prototype/UI polish work should follow `design.md`.
+
+`design.md` is the source of truth for the next prototyping pass covering landing, cafe microsite, customer order flow, staff board, owner dashboard, menu management, customers, and rewards dashboard screens.
+
+The design pass must preserve current pilot boundaries: no payments, no Telegram, no native app, no inventory, and no POS integration.
