@@ -91,6 +91,8 @@ Before editing, choose the route that matches the task.
 - Keep cafe-specific behavior database-driven.
 - Update docs when a durable decision changes.
 - Add known gaps to `docs/KNOWN_GAPS.md`.
+- Link pull requests to completed issues with `Closes #123` or
+  `Auto-close: #123`; see `.github/AUTOMATION.md`.
 - Commit after each meaningful milestone.
 
 ## Testing priority
