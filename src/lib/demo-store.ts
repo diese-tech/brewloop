@@ -1,11 +1,17 @@
 "use client";
 
 import { demoCafe, demoLoyaltyAccounts, demoOrders } from "@/lib/demo-data";
-import type { CafeOrder, LoyaltyAccount, MenuItem } from "@/lib/types";
+import type {
+  CafeOrder,
+  LoyaltyAccount,
+  MenuCategory,
+  MenuItem,
+} from "@/lib/types";
 
 const KEYS = {
   orders: "brewloop-demo-orders",
   loyalty: "brewloop-demo-loyalty",
+  categories: "brewloop-demo-categories",
   menu: "brewloop-demo-menu",
 };
 
@@ -33,6 +39,10 @@ export const demoStore = {
   getLoyalty: () =>
     read<LoyaltyAccount[]>(KEYS.loyalty, demoLoyaltyAccounts),
   setLoyalty: (accounts: LoyaltyAccount[]) => write(KEYS.loyalty, accounts),
+  getCategories: () =>
+    read<MenuCategory[]>(KEYS.categories, demoCafe.categories),
+  setCategories: (categories: MenuCategory[]) =>
+    write(KEYS.categories, categories),
   getMenu: () => read<MenuItem[]>(KEYS.menu, demoCafe.items),
   setMenu: (items: MenuItem[]) => write(KEYS.menu, items),
 };

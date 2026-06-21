@@ -12,7 +12,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { calculateOrderTotal, formatCurrency } from "@/lib/commerce";
 import { demoStore, STORE_EVENT } from "@/lib/demo-store";
-import type { Cafe, CafeOrder, OrderType } from "@/lib/types";
+import type {
+  Cafe,
+  CafeOrder,
+  MenuCategory,
+  OrderType,
+} from "@/lib/types";
 
 export function OrderBuilder({
   cafe,
@@ -31,9 +36,13 @@ export function OrderBuilder({
   const [notes, setNotes] = useState("");
   const [confirmation, setConfirmation] = useState<string | null>(null);
   const [menuItems, setMenuItems] = useState(cafe.items);
+  const [categories, setCategories] = useState<MenuCategory[]>(cafe.categories);
 
   useEffect(() => {
-    const syncMenu = () => setMenuItems(demoStore.getMenu());
+    const syncMenu = () => {
+      setMenuItems(demoStore.getMenu());
+      setCategories(demoStore.getCategories());
+    };
     syncMenu();
     window.addEventListener(STORE_EVENT, syncMenu);
     window.addEventListener("storage", syncMenu);
@@ -92,10 +101,13 @@ export function OrderBuilder({
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
       <div className="space-y-10">
-        {cafe.categories.map((category) => {
+        {[...categories]
+          .sort((a, b) => a.sortOrder - b.sortOrder)
+          .map((category) => {
           const items = menuItems.filter(
             (item) => item.categoryId === category.id && item.isActive,
           );
+          if (!items.length) return null;
           return (
             <section key={category.id}>
               <h2 className="mb-4 text-2xl font-semibold">{category.name}</h2>
@@ -140,7 +152,7 @@ export function OrderBuilder({
               </div>
             </section>
           );
-        })}
+          })}
       </div>
 
       <aside>
