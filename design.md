@@ -1,548 +1,854 @@
-# BrewLoop Design Brief
+# BrewLoop Visual Design Template
 
-This document guides the next prototyping pass for BrewLoop.
+This file defines BrewLoop's reusable visual design system for cafe microsites, QR ordering, loyalty, staff tools, and owner dashboards.
 
-It translates the existing product decisions into concrete UX, visual direction, screen behavior, and prototype acceptance criteria.
+The goal is not to create one fixed BrewLoop look. The goal is to create a template where each cafe can swap in its own:
 
-## Current repo state
+- name
+- logo
+- colors
+- brand art
+- short copy
+- menu content
+- loyalty language
+- external website/social CTA
 
-BrewLoop already has a working Next.js prototype scaffold with:
+BrewLoop should appear only as a quiet trust/footer mark:
 
-- Next.js 15, React 19, TypeScript, Tailwind, shadcn/ui-style components
-- Supabase packages installed
-- Vitest configured
-- Public landing page
-- Demo cafe route: `/cafe/demo-coffee`
-- Customer order route: `/cafe/demo-coffee/order`
-- Table QR support via `?t=12`
-- Rewards route: `/cafe/demo-coffee/rewards`
-- Staff order board: `/staff/orders`
-- Owner dashboard: `/dashboard`
-- Owner menu management: `/dashboard/menu`
-- Browser-storage demo adapter
-- Supabase migration and seed documentation
+> Powered by BrewLoop by ThreeTails
 
-The current product is demoable, but the UI should be upgraded into a more polished prototype that feels credible to a real local cafe owner.
+## Design intent
 
-## Prototype objective
+BrewLoop should feel like a cozy local cafe experience first and software second.
 
-Create a polished, clickable, pilot-ready prototype that can be shown to a local cafe owner in under five minutes.
+Default personality:
 
-The prototype should answer:
-
-> Can a shop owner understand how BrewLoop helps them capture customers, run lightweight QR orders, and encourage repeat visits without replacing their POS?
-
-## Design principles
-
-### 1. Local cafe first
-
-BrewLoop should feel warm, practical, and owner-friendly.
+- cozy
+- local
+- warm
+- practical
+- lightly magical
+- simple enough for staff
+- polished enough for business owners
 
 Avoid:
 
-- crypto/SaaS bro energy
-- enterprise dashboard overload
-- fake AI language
-- generic POS-clone aesthetics
+- sterile white SaaS dashboards
+- generic restaurant-app UI
+- loud marketplace branding
+- fake AI styling
+- corporate CRM language
+- heavy POS aesthetics
 
-Use:
+## Template model
 
-- warm neutrals
-- coffee/cafe cues
-- clear spacing
-- readable cards
-- obvious actions
-- calm confidence
+Every cafe uses the same layout system and component behavior, but receives a personalized theme.
 
-### 2. No-POS-replacement clarity
+### Template stays the same
 
-The prototype must repeatedly make clear:
+- page structure
+- customer QR flow
+- loyalty signup flow
+- menu layout
+- order cart behavior
+- staff board layout
+- owner dashboard layout
+- component states
+- accessibility rules
+- spacing system
 
-- no online payment in the current pilot
-- customer pays at the cafe
-- BrewLoop complements the existing register/POS
-- BrewLoop's value is customer capture and repeat visits
+### Cafe theme changes
 
-### 3. Mobile-first customer flow
+- logo
+- primary color
+- secondary color
+- background tone
+- accent color
+- brand imagery
+- typography accent if needed
+- hero copy
+- loyalty reward wording
+- external website/social CTA
 
-Customer screens should look excellent on a phone.
+This keeps onboarding configuration-driven instead of engineering-driven.
 
-The QR flow is the wedge, so `/cafe/[slug]`, `/order`, and `/rewards` should feel better on mobile than desktop.
+## Brand hierarchy
 
-### 4. Staff speed over beauty
+### Customer-facing pages
 
-The staff board should be glanceable, touch-friendly, and low training.
+Cafe brand dominates.
 
-A barista should understand it immediately.
+BrewLoop appears only as a subtle footer note:
 
-### 5. Owner confidence
+```text
+Powered by BrewLoop by ThreeTails
+```
 
-The owner dashboard should make BrewLoop feel like a business tool, not just a menu demo.
+Do not make BrewLoop visually compete with the cafe.
 
-Prioritize:
+### Staff and owner pages
 
-- orders today
-- customer capture
-- loyalty signups
-- repeat customers
-- menu control
+BrewLoop may be slightly more visible because these are operational tools, but the selected cafe name/theme should still be present.
 
-Do not prioritize:
+Recommended staff/owner header:
 
-- revenue charts
-- payment analytics
-- inventory
-- scheduling
+```text
+[ Cafe logo ] [ Cafe name ]
+Powered by BrewLoop
+```
 
-## Primary demo story
+## Default design lane
 
-Use this sequence for the prototype:
+Primary lane:
 
-1. Owner opens BrewLoop landing page.
-2. Owner opens Demo Coffee.
-3. Customer scans QR and lands on the cafe page.
-4. Customer browses menu.
-5. Customer adds items.
-6. Customer enters name and optional phone.
-7. Customer adds note like `oat milk, no whip`.
-8. Customer places order.
-9. Staff sees the order on the board.
-10. Staff advances order from New → Making → Ready → Completed.
-11. Customer joins rewards.
-12. Owner views dashboard and sees customer/loyalty value.
-13. Owner edits menu availability or adds an item.
+> Cozy local cafe
 
-## Target screens
+Supporting lane:
 
-### 1. Marketing landing page `/`
+> Boutique hospitality software
 
-Current state:
+The interface should feel warm and specific to the shop, but still structured enough for ordering, staff operations, and owner management.
 
-- Hero exists.
-- Feature cards exist.
-- CTA links to demo cafe and staff board.
+## Visual warmth
 
-Prototype goals:
+Target warmth level: 4 / 5.
 
-- Make the value proposition sharper.
-- Add a simple demo path section.
-- Add a "built for cafes that already have a register" message.
-- Add owner-facing CTA: `Launch a demo cafe` or `View Demo Coffee`.
+This means:
 
-Content direction:
+- warm backgrounds are preferred over pure white
+- surfaces can feel tactile/card-like
+- accent colors can be rich and shop-specific
+- typography can have personality in headings
+- icons should support the brand mood
 
-- Headline: `Turn QR orders into regulars.`
-- Subheadline: `BrewLoop gives independent cafes a branded QR menu, lightweight order queue, and loyalty capture without replacing the register.`
-- CTA 1: `Open Demo Coffee`
-- CTA 2: `View Staff Board`
+But:
 
-Sections:
+- forms must remain clear
+- order actions must remain obvious
+- staff board must remain operational
+- contrast must stay accessible
 
-- Hero
-- Three value cards:
-  - QR menu in minutes
-  - Capture customer info
-  - Reward repeat visits
-- How it works:
-  - Scan
-  - Order
-  - Pay at cafe
-  - Join rewards
-- Pilot boundary callout:
-  - `No payments. No app download. No Telegram.`
+## Core layout pattern
 
-### 2. Cafe public page `/cafe/demo-coffee`
+Use a mobile-first structure.
 
-Current state:
+QR customers are usually scanning from a phone, not a laptop.
 
-- Cafe name/tagline
-- action card for menu/rewards
-- simple feature cards
+Desktop should still look good, but mobile is the primary customer experience.
+
+### Customer page hierarchy
+
+1. Cafe identity
+2. Loyalty entry
+3. Menu/order entry
+4. Current order/cart
+5. Post-order CTA
+6. External site/social CTA
+7. Subtle BrewLoop footer
+
+### Owner/staff hierarchy
+
+1. Current cafe identity
+2. Today/status context
+3. Primary action area
+4. Supporting metrics/details
+5. Operational notes/gaps
+
+## Important product flow decision
+
+The preferred customer journey is:
+
+1. Customer scans QR code.
+2. Customer lands in a loyalty-first cafe portal.
+3. Customer links phone/email or checks existing rewards.
+4. Customer continues into the menu/order flow.
+5. Customer places order.
+6. Post-order confirmation prompts customer to visit the cafe's main website, social page, events page, or other shop-owned destination.
+
+### Challenge to this approach
+
+Loyalty-first is strong for customer capture, but it can create friction if the customer only wants to order quickly.
+
+Design solution:
+
+The loyalty area should be prominent but skippable.
+
+Recommended hero actions:
+
+- Primary: `Join / check rewards`
+- Secondary: `Order now`
+
+Never block ordering behind loyalty signup.
+
+This preserves the business goal without making the QR flow annoying.
+
+## Theme token structure
+
+Each cafe should be configured with a theme object like this:
+
+```ts
+const cafeTheme = {
+  name: "The Black Rabbit Bookbar",
+  shortName: "Black Rabbit",
+  logoUrl: "/themes/black-rabbit/logo.png",
+  brandArtUrl: "/themes/black-rabbit/brand-art.png",
+  primary: "#4B0F1E",
+  primaryForeground: "#FFF7F2",
+  background: "#120C10",
+  surface: "#1D1419",
+  surfaceAlt: "#2A1A22",
+  border: "#5E2A38",
+  accent: "#F4E8D8",
+  accentMuted: "#B8916D",
+  text: "#FFF7F2",
+  textMuted: "#D8C6BB",
+  success: "#8FAF7A",
+  warning: "#D7A85B",
+  danger: "#B85C5C",
+  radius: "1.25rem",
+  mood: "dark witchy bookbar",
+};
+```
+
+Do not hardcode The Black Rabbit colors into shared components. Use theme tokens.
+
+## Default neutral theme
+
+Use this when a cafe has not provided branding yet.
+
+```ts
+const defaultCafeTheme = {
+  primary: "#5B3826",
+  primaryForeground: "#FFF8F0",
+  background: "#F7EFE4",
+  surface: "#FFF9F1",
+  surfaceAlt: "#EFE1D1",
+  border: "#D9C6B4",
+  accent: "#A66A43",
+  accentMuted: "#7C8A61",
+  text: "#241711",
+  textMuted: "#6F5A4B",
+  success: "#6F8A53",
+  warning: "#B9803A",
+  danger: "#A84A3D",
+  radius: "1rem",
+  mood: "warm neighborhood cafe",
+};
+```
 
-Prototype goals:
+## First pilot theme: The Black Rabbit Bookbar
 
-- Make this feel like a real branded cafe microsite.
-- Add clearer order mode entry.
-- Add visible loyalty hook.
-- Add practical cafe details.
+The first concrete design target is The Black Rabbit Bookbar in Clermont, Florida.
 
-Required elements:
+Their theme should feel:
 
-- Cafe name
-- Tagline
-- Status/open hours
-- Location line
-- CTA: `Order now`
-- CTA: `Check rewards`
-- Small note: `Pay at the cafe when ready`
-- Featured items preview, optional for prototype
+- dark
+- witchy
+- literary
+- cozy
+- a little mysterious
+- local and intimate
+- not Halloween-cheap
 
-Mobile behavior:
+Palette direction:
+
+- black / near-black base
+- maroon primary
+- warm white text accents
+- muted parchment/cream surfaces
+- optional brass/gold accent
+- subtle deep plum shadows
 
-- CTA buttons should appear early without scrolling too much.
-- Order/rewards actions should be thumb-friendly.
+Suggested tokens:
 
-### 3. Customer order page `/cafe/demo-coffee/order`
+```ts
+const blackRabbitTheme = {
+  primary: "#5A1024",
+  primaryForeground: "#FFF5EC",
+  background: "#100B0F",
+  surface: "#1A1118",
+  surfaceAlt: "#251620",
+  border: "#4B2634",
+  accent: "#E8D6BF",
+  accentMuted: "#A98262",
+  text: "#FFF7F0",
+  textMuted: "#CDB8AA",
+  success: "#8DA36B",
+  warning: "#D3A04F",
+  danger: "#B65B5B",
+};
+```
 
-Current state:
+Visual motifs:
 
-- Categories/items
-- plus/minus quantity
-- sticky order card
-- pickup/table toggle
-- table query support
-- name/phone/notes
-- confirmation state
+- moon phases
+- book spines
+- rabbit silhouette
+- subtle stars
+- potion-label style badges
+- parchment cards on dark background
+- thin ornate dividers, used sparingly
 
-Prototype goals:
+Avoid:
 
-- Make the cart easier on mobile.
-- Make ordering mode obvious.
-- Improve confirmation state.
-- Surface notes as intentional customization, not an afterthought.
+- cartoon witches
+- neon purple overload
+- Halloween clipart
+- heavy gothic fonts for body text
+- illegible contrast
 
-Required changes/design targets:
+## Typography
 
-- Mobile cart should be collapsible or bottom-sticky.
-- Desktop cart can stay right-side sticky.
-- Menu cards should have clear add buttons.
-- Quantity controls should be touch-friendly.
-- Notes placeholder should show realistic cafe examples:
-  - `oat milk, half sweet, no whip`
-- Order confirmation should show:
-  - order number
-  - order type
-  - table or pickup
-  - total due at cafe
-  - CTA to rewards
-  - CTA to place another order or return to cafe page
+Use a clean, readable base typeface for all functional UI.
 
-Important copy:
+Recommended split:
 
-- `No online payment. Pay at the cafe.`
-- `Have a substitution? Add it in notes for now.`
+### Body/UI font
 
-Do not build structured modifiers yet.
+Use a clean sans-serif.
 
-### 4. Staff order board `/staff/orders`
+Examples:
 
-Current state:
+- Inter
+- Geist Sans
+- system sans-serif
 
-- Four columns: New, Making, Ready, Completed
-- Cards show name, order id, type/table, items, notes, time, total
-- Button advances status
+### Display/accent font
 
-Prototype goals:
+Optional per cafe.
 
-- Make the board tablet-friendly.
-- Improve status clarity.
-- Add operational affordances without building complex ops.
+Use only for:
 
-Required elements:
+- hero headline
+- cafe name
+- small decorative section labels
 
-- Clear column headers with counts
-- Strong visual difference between New/Making/Ready/Completed
-- Large status action buttons
-- Notes highlighted enough for staff to notice
-- Table number/pickup badge prominent
-- Empty states in each column
+For The Black Rabbit, the accent type can feel literary or mystical, but it must remain readable.
 
-Nice-to-have prototype touches:
+Avoid using decorative fonts for:
 
-- `Clear completed` button as disabled/nonfunctional placeholder or documented future action
-- `Demo mode` badge so viewers understand local browser behavior
-- Order age indicator, for example `4 min ago`
+- menus
+- order cards
+- buttons
+- staff board
+- forms
 
-Do not add kitchen routing, printers, inventory, or payment reconciliation.
+## Spacing and shape
 
-### 5. Rewards page `/cafe/demo-coffee/rewards`
+Overall feel:
 
-Current state:
+- generous mobile padding
+- rounded cards
+- calm vertical rhythm
+- strong CTA spacing
+- no cramped forms
 
-- Form asks name/email/phone
-- Progress punch card shows ten visits
+Suggested scale:
 
-Prototype goals:
+- page horizontal mobile padding: `1rem` to `1.25rem`
+- desktop max width: `72rem` for marketing/cafe pages
+- staff board max width: `90rem` or full width
+- card radius: `1rem` to `1.5rem`
+- button radius: match card radius, slightly tighter
+- section spacing: `3rem` to `5rem` desktop, `2rem` mobile
 
-- Make rewards feel like a customer benefit and an owner capture engine.
-- Make signup friction low.
+## Icon direction
 
-Required elements:
+Use icons when possible, but keep them supportive.
 
-- Clear reward rule:
-  - `10 visits = reward`
-- Phone/email lookup
-- Visual punch card
-- Progress state
-- Empty/new customer state
-- Privacy reassurance:
-  - `No app download. No separate account.`
+Recommended icon usage:
 
-Prototype improvement:
+- QR/order: simple scan or bag icon
+- loyalty: gift, stamp, star, loop, rabbit/moon if themed
+- staff board: clock, cup, check, bell
+- owner dashboard: users, repeat, menu, chart-lite
 
-- After placing order, rewards page should feel like the natural next step.
-- Copy should explain why joining matters while waiting.
+Avoid:
 
-### 6. Owner dashboard `/dashboard`
+- overusing coffee cup icons
+- mixing too many icon styles
+- icons that look like crypto/web3 badges
 
-Current state:
+## Page templates
 
-- Metrics cards
-- callout about customer capture
+## 1. Cafe portal page
 
-Prototype goals:
-
-- Make the owner dashboard explain the business value at a glance.
-- Avoid fake revenue analytics since payments are excluded.
-
-Required metrics:
-
-- Orders today
-- New customers
-- Known customers
-- Loyalty members
-
-Add useful demo sections:
-
-- Recent orders
-- Recent loyalty signups
-- `Pilot checklist` card:
-  - menu configured
-  - QR codes generated
-  - staff board tested
-  - rewards active
-
-Design tone:
-
-- This should feel like a simple command center, not an enterprise BI tool.
-
-### 7. Menu management `/dashboard/menu`
-
-Current state:
-
-- Menu manager exists.
-- Demo changes persist in browser.
-
-Prototype goals:
-
-- Make menu editing feel like the key owner control surface.
-- Keep setup obviously configuration-driven.
-
-Required actions:
-
-- Add category
-- Rename category
-- Add item
-- Edit item
-- Hide/show item
-- See price in dollars while storing cents internally
-
-Prototype additions:
-
-- Add a `Menu setup` intro card explaining:
-  - `Menus live in BrewLoop so QR ordering, order totals, loyalty, and analytics work.`
-- Add future import placeholder:
-  - `CSV import coming next`
-- Add sold-out/hidden language that makes sense to owners.
-
-Do not build POS sync yet.
-
-### 8. Owner customers page `/dashboard/customers`
-
-If not already complete, create a prototype-quality page.
+This is the main QR landing experience.
 
 Purpose:
 
-Show the owner what BrewLoop captures.
+- identify the cafe
+- invite loyalty signup/check-in
+- allow quick ordering without forcing signup
+- point to cafe-owned destinations
 
-Required content:
+Layout:
 
-- Customer name
-- Phone/email
+1. Full-screen-ish branded hero
+2. Logo/cafe name
+3. Short cafe tagline
+4. Open/status badge
+5. Loyalty card
+6. Order CTA
+7. External site/social/event CTA
+8. Powered by BrewLoop footer
+
+Recommended hero copy pattern:
+
+```text
+Welcome to [Cafe Name]
+[Short mood/tagline]
+
+Earn rewards every time you visit.
+```
+
+Primary CTA:
+
+```text
+Join / check rewards
+```
+
+Secondary CTA:
+
+```text
+Order now
+```
+
+External CTA examples:
+
+```text
+Visit our website
+See upcoming events
+Follow us on Instagram
+Browse book club nights
+```
+
+For The Black Rabbit:
+
+```text
+Enter the rabbit hole.
+Books, brews, and a little bit of magic.
+```
+
+## 2. Loyalty panel
+
+Purpose:
+
+Capture customer identity without forcing a full account.
+
+Fields:
+
+- phone or email
+- name optional or second step
+
+Design:
+
+- make the reward visually satisfying
+- use punch/stamp metaphor
+- show current progress
+- keep the form short
+
+Rules:
+
+- Do not require app download.
+- Do not require password.
+- Do not block ordering.
+
+The loyalty panel should feel like a benefit, not a data grab.
+
+## 3. Menu/order page
+
+Purpose:
+
+Let the customer order quickly from a phone.
+
+Mobile layout:
+
+1. Compact cafe header
+2. Order mode indicator: pickup or table
+3. Category tabs or stacked category sections
+4. Menu item cards
+5. Bottom sticky cart bar
+6. Cart drawer/sheet for checkout details
+
+Desktop layout:
+
+1. Category/item grid
+2. Right sticky cart
+
+Item card style:
+
+- item name
+- short description
+- price
+- plus/add button
+- optional brand/image area later
+
+Cart style:
+
+- bottom sticky on mobile
+- side sticky on desktop
+- clear total due at cafe
+- notes field for custom requests
+- name required
+- phone optional but encouraged
+
+Important message:
+
+```text
+No online payment. Pay at the cafe.
+```
+
+Notes placeholder:
+
+```text
+Oat milk, half sweet, no whip…
+```
+
+## 4. Order confirmation
+
+Purpose:
+
+Reinforce success and route the customer to the next best action.
+
+Show:
+
+- order number
+- customer name
+- pickup/table
+- total due at cafe
+- status: received
+- estimated wait placeholder if available later
+
+Primary post-order CTA:
+
+```text
+Check rewards
+```
+
+Secondary CTA:
+
+```text
+Visit [Cafe Name]'s site
+```
+
+For The Black Rabbit, examples:
+
+```text
+Browse events
+See book club nights
+Follow The Black Rabbit
+```
+
+## 5. Staff board
+
+Purpose:
+
+Let staff move orders through a simple queue.
+
+Style:
+
+- Kanban-style status columns
+- large cards
+- clear badges
+- touch-friendly buttons
+- strong notes visibility
+
+Columns:
+
+- New
+- Making
+- Ready
+- Completed
+
+Order card content:
+
+- customer name
+- order id
+- pickup/table badge
+- table number if present
+- items
+- notes
+- time received
+- total due
+- next status button
+
+Visual density:
+
+- more compact than customer pages
+- still spacious enough for touch
+
+Do not add printer/KDS behavior in this design pass.
+
+## 6. Owner dashboard
+
+Purpose:
+
+Small command center for the shop owner.
+
+Style:
+
+- calm dashboard
+- not enterprise BI
+- brand-aware but less decorative than customer pages
+
+Top metrics:
+
+- orders today
+- new customers
+- known customers
+- loyalty members
+
+Recommended sections:
+
+- Today at a glance
+- Recent orders
+- Recent loyalty signups
+- Pilot checklist
+- Menu quick actions
+
+Pilot checklist:
+
+- menu configured
+- QR codes generated
+- staff board tested
+- rewards active
+
+The owner should immediately understand that BrewLoop is about customer capture and repeat visits.
+
+## 7. Menu management
+
+Purpose:
+
+Let owner/operator configure the menu without code.
+
+Style:
+
+- practical
+- table/card hybrid
+- clear edit actions
+
+Required controls:
+
+- add category
+- rename category
+- add item
+- edit item
+- hide/show item
+- price in dollars UI, cents internally
+
+Future placeholder:
+
+```text
+CSV import coming next
+```
+
+## 8. Customers page
+
+Purpose:
+
+Show that BrewLoop creates a customer list.
+
+Style:
+
+- simple relationship view
+- not full CRM
+
+Fields:
+
+- name
+- phone/email
 - visits
 - last seen
-- loyalty progress
+- reward progress
 
-Actions can be placeholders:
+Placeholder actions:
 
 - view profile
 - adjust visits
-- export CSV later
+- export later
 
-### 9. Owner rewards page `/dashboard/rewards`
-
-If not already complete, create a prototype-quality page.
+## 9. Rewards admin page
 
 Purpose:
 
-Show the owner that loyalty rules are configurable later, even if current pilot uses one fixed rule.
+Show loyalty setup/value.
 
-Required content:
+Current pilot:
 
-- Current rule: `10 visits = reward`
-- Members count
-- Rewards earned/redeemed placeholder
-- Explanation that configurable rules are v1.5
+- fixed 10-visit reward
 
-Do not build SMS/email campaigns yet.
+Future v1.5:
 
-## Visual system direction
+- configurable visits-based rule
+- points-per-order option later
+- manual adjustment
 
-### Brand feel
+Style:
 
-Warm, local, practical, lightly premium.
+- simple rule card
+- member stats
+- redemption placeholder
 
-Suggested traits:
+## Component styling
 
-- warm neutral backgrounds
-- soft cards
-- rounded corners
-- subtle borders
-- limited accent color
-- clear iconography
-- readable contrast
+### Buttons
 
-### Color guidance
+Primary buttons:
 
-Use existing design tokens where possible.
+- high contrast
+- filled with cafe primary color
+- rounded
+- large touch target
 
-Preferred direction:
+Secondary buttons:
 
-- background: warm off-white / cream
-- cards: white or very light cream
-- primary: espresso / coffee brown or muted amber
-- secondary accents: sage, oat, or muted green
-- destructive: muted red only where needed
+- outlined or soft-filled
+- visible on dark and light themes
 
-Do not over-theme every cafe yet. Per-cafe branding can come later through `primary_color`, logo, and slug settings.
+Danger actions:
 
-### Typography
+- muted red
+- avoid loud destructive styling unless truly destructive
 
-Current typography is acceptable.
+### Cards
 
-Keep:
+Customer cards:
 
-- large, confident headings
-- readable body copy
-- small mono labels for operational metadata
+- warm/tactile
+- larger radius
+- soft shadow or subtle border
 
-Avoid:
+Staff cards:
 
-- dense dashboard text
-- tiny mobile controls
-- excessive uppercase labels
+- clearer borders
+- less decorative
+- status-first
 
-## Component guidance
+Owner cards:
 
-Use existing UI primitives when possible:
+- balanced between warmth and utility
 
-- Button
-- Card
-- Badge
-- Input
-- Label
-- Textarea
+### Badges
 
-Add only components needed for prototype clarity:
+Use badges for:
 
-- StatCard
-- EmptyState
-- DemoModeBadge
-- SectionHeader
-- OrderStatusBadge
-- MobileCartBar
-- PilotChecklistCard
+- pickup/table
+- open/closed
+- order status
+- reward status
+- demo mode
 
-Keep components simple. Do not introduce a design system overhaul.
+For themed cafes, badges can carry mood through color and shape.
 
-## Copy rules
+### Forms
 
-Use owner/customer-friendly language.
+Forms should be short.
 
-Prefer:
+Rules:
 
-- `Pay at the cafe`
-- `Join rewards`
-- `Known customers`
-- `Loyalty members`
-- `Hide item`
-- `Mark ready`
+- label every field
+- use helpful placeholders
+- keep mobile keyboards in mind
+- avoid multi-step complexity unless it reduces friction
 
-Avoid:
+## Theme examples
 
-- `tenant`
-- `RLS`
-- `CRM` on customer-facing screens
-- `engagement engine`
-- `AI-powered`
-- `omnichannel`
+## The Black Rabbit Bookbar theme
 
-## Demo data direction
+Mood:
 
-Demo Coffee should feel believable.
+```text
+dark witchy book cafe
+```
 
-Suggested menu:
+Suggested styling:
 
-Coffee:
+- dark maroon gradient background
+- parchment-colored cards
+- cream text
+- brass accent lines
+- rabbit/moon/book iconography
+- subtle star texture or divider
 
-- Latte
-- Cold Brew
-- Cappuccino
-- Americano
+Hero example:
 
-Tea:
+```text
+Enter the rabbit hole.
+Books, brews, and a little bit of magic.
+```
 
-- Matcha Latte
-- Chai Latte
-- Iced Green Tea
+CTA examples:
 
-Pastries:
+```text
+Check your rewards
+Order from the bar
+Browse events
+```
 
-- Butter Croissant
-- Blueberry Muffin
-- Banana Bread
+Powered-by footer:
 
-Use realistic prices:
+```text
+Powered by BrewLoop by ThreeTails
+```
 
-- drinks: $3.75–$6.25
-- pastries: $3.25–$5.25
+## Simple bright cafe theme
 
-Include a few active sample orders so the staff board is not empty on first open.
+Inspired by simple coffee storefronts.
 
-## Prototype acceptance criteria
+Mood:
 
-The design pass is complete when:
+```text
+clean neighborhood roaster
+```
 
-- Landing page communicates the product in under 10 seconds.
-- Demo cafe page feels like a branded cafe microsite.
-- Customer can place a pickup order on mobile without confusion.
-- Customer can place a table order using `?t=12`.
-- Confirmation clearly sends customer toward rewards.
-- Staff board is readable on tablet/desktop and usable by touch.
-- Owner dashboard explains customer capture and loyalty value.
-- Menu management feels owner-friendly.
-- Customers and rewards dashboard pages are prototype-quality.
-- Empty/loading/demo states are intentional, not accidental.
-- No payments, Telegram, native app, inventory, or POS sync are introduced.
+Suggested styling:
 
-## Out of scope for this prototyping pass
+- cream background
+- white cards
+- espresso text
+- muted green accent
+- simple product cards
+- minimal decoration
 
-Do not build:
+Hero example:
 
-- payment processing
-- SMS/email campaigns
-- Square integration
-- Toast/Clover integration
-- native app
-- inventory
-- staff scheduling
-- structured modifier engine
-- multi-location dashboard
-- advanced analytics
+```text
+Good coffee, easy mornings.
+```
 
-## Codex prompt for the prototyping pass
+CTA examples:
 
-Use this prompt for Codex:
+```text
+Join rewards
+Order now
+Visit our shop
+```
+
+## Accessibility requirements
+
+- Maintain readable contrast for all themed palettes.
+- Do not use decorative fonts for body text or form inputs.
+- Buttons must be large enough for mobile touch.
+- Color cannot be the only status indicator.
+- Staff board status must include text labels.
+- Forms must have labels.
+
+## Prototyping rules
+
+For the next design pass:
+
+- Make the theme system obvious in code.
+- Use The Black Rabbit Bookbar as the first branded example.
+- Keep the default cafe theme available.
+- Do not add payments.
+- Do not add POS integration.
+- Do not add structured modifiers yet.
+- Keep the loyalty-first portal skippable.
+- Make mobile customer flow the priority.
+- Keep staff/owner tools functional and less decorative.
+
+## Codex prompt
 
 ```text
 Read CODEX.md and docs/DECISIONS.md first.
@@ -557,35 +863,34 @@ Then read:
 - docs/KNOWN_GAPS.md
 
 Task:
-Upgrade the BrewLoop prototype UI using design.md as the source of truth.
+Apply the BrewLoop visual design template from design.md.
 
 Goals:
-- Make the existing demo feel polished enough to show a real local cafe owner.
-- Improve landing, cafe, order, rewards, staff board, owner dashboard, menu management, customers, and rewards dashboard screens.
-- Preserve the current pilot boundaries: no payments, no Telegram, no native app, no POS integration.
-- Keep demo mode working through the current browser-storage adapter.
-- Keep cafe-specific behavior configuration-driven.
+- Treat BrewLoop as a brand-swappable cafe microsite and ordering template.
+- Make the customer-facing pages cafe-branded first, with BrewLoop only as a subtle powered-by footer.
+- Use The Black Rabbit Bookbar as the first concrete theme example: dark, witchy, literary, maroon/black/cream accents.
+- Keep a neutral default cafe theme available for other shops.
+- Prioritize mobile QR customer flow.
+- Make the loyalty-first portal prominent but skippable.
+- Preserve the current order, rewards, staff, and owner demo flows.
 
-Implementation constraints:
-- Use the existing Next.js/TypeScript/Tailwind/shadcn-style stack.
-- Prefer existing UI primitives.
-- Do not introduce large dependencies for this pass.
-- Keep changes small and reviewable.
-- Commit after meaningful milestones.
+Constraints:
+- No payments.
+- No Telegram.
+- No native app.
+- No POS integration.
+- No structured modifier engine.
+- Use existing Next.js, TypeScript, Tailwind, and UI primitives.
+- Keep cafe-specific styling configuration-driven, not hardcoded per page.
 
 Acceptance criteria:
-- Landing page communicates BrewLoop in under 10 seconds.
-- Demo cafe page feels like a branded cafe microsite.
-- Mobile customer order flow is clear and touch-friendly.
-- Table QR query param still works.
-- Order confirmation points customers toward rewards.
-- Staff board is readable and tablet-friendly.
-- Owner dashboard shows customer capture and loyalty value.
-- Menu management is owner-friendly.
-- Customers and rewards dashboard pages are prototype-quality.
-- npm run lint, npm test, and npm run build pass or documented gaps are added to docs/KNOWN_GAPS.md.
-
-End of session:
-- Update CODEX.md, docs/DECISIONS.md, design.md, and/or docs/KNOWN_GAPS.md if durable context changed.
-- Summarize changed files, checks run, and remaining gaps.
+- The Black Rabbit Bookbar theme feels dark, witchy, cozy, and local without becoming Halloween clipart.
+- Customer pages feel like the cafe, not BrewLoop.
+- `Powered by BrewLoop by ThreeTails` appears subtly.
+- The portal leads with loyalty but still allows immediate ordering.
+- Mobile ordering is clear and touch-friendly.
+- Staff board remains practical and readable.
+- Owner dashboard feels like a small command center.
+- Theme tokens make it obvious how another cafe could swap in colors/logo/copy.
+- Run lint, tests, and build; document any gaps in docs/KNOWN_GAPS.md.
 ```
