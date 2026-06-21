@@ -97,6 +97,10 @@ Even if BrewLoop eventually integrates with Square, Toast, or another POS, BrewL
 
 POS/menu integrations should be later-stage accelerators, not v1 requirements.
 
+The intended pilot cafe currently uses Square POS. Preserve a clean future
+Square integration seam, while keeping Square optional and outside the current
+pilot implementation.
+
 Potential later options:
 
 - Import menu from Square

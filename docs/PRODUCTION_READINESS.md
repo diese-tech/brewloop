@@ -39,9 +39,21 @@ This keeps reads, writes, RLS policies, and future analytics straightforward.
 
 New businesses should be configured through database records.
 
-Likely configuration tables:
+Current core tables:
 
 - `cafes`
+- `cafe_users`
+- `customers`
+- `menu_categories`
+- `menu_items`
+- `orders`
+- `order_items`
+- `loyalty_accounts`
+- `loyalty_transactions`
+- `promotions`
+
+Planned configuration and operations tables:
+
 - `cafe_settings`
 - `loyalty_programs`
 - `reward_rules`
@@ -95,7 +107,9 @@ Owners may:
 - Invite staff
 - Configure loyalty
 
-If RLS is incomplete during scaffolding, document the gap in `docs/KNOWN_GAPS.md`.
+The deployed policies require adversarial review and automated tenant-isolation
+tests before a production pilot. Current security gaps belong in
+`docs/KNOWN_GAPS.md`.
 
 ## Testing baseline
 

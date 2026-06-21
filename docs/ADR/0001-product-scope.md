@@ -88,6 +88,5 @@ Negative:
 
 ## Follow-ups
 
-- Document known gaps in `docs/KNOWN_GAPS.md`.
 - Revisit payments only after a pilot validates core demand.
 - Revisit messaging after phone/email opt-in and compliance requirements are defined.

@@ -72,6 +72,7 @@ see `docs/KNOWN_GAPS.md`.
 
 ## Product boundaries
 
-V1 intentionally excludes payments, Telegram, native apps, inventory, payroll,
-deep POS integrations, and complex marketing campaigns. See `CODEX.md` and the
-ADRs in `docs/ADR/` for the durable product and architecture decisions.
+The current pilot scope intentionally excludes payments, Telegram, native apps,
+inventory, payroll, deep POS integrations, and complex marketing campaigns.
+See `CODEX.md` and the ADRs in `docs/ADR/` for the durable product and
+architecture decisions.

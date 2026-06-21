@@ -1,12 +1,11 @@
 # Known Gaps
 
-These gaps are intentional or incomplete in the current BrewLoop MVP scaffold.
+These gaps remain unresolved in the current BrewLoop product.
 
 ## Data integration
 
-- The interactive UI uses a browser-storage demo adapter. Supabase clients,
-  generated database types, deployed schema, RLS, and Demo Coffee seed data
-  exist, but production reads and writes are not yet wired to those clients.
+- The interactive UI uses a browser-storage demo adapter; production reads and
+  writes are not yet wired to the Supabase clients.
 - Browser-storage data is local to one browser profile and is not suitable for
   a real café pilot.
 - Order creation should become one server-side transaction that validates menu
@@ -16,9 +15,9 @@ These gaps are intentional or incomplete in the current BrewLoop MVP scaffold.
 
 - Staff and owner routes do not yet require Supabase Auth.
 - Route-level auth guards and server-side role checks still need implementation.
-- The initial RLS policies need an adversarial review and automated tenant
+- The deployed RLS policies need an adversarial review and automated tenant
   isolation tests before production use.
-- Public insert policies are intentionally permissive for scaffolding and need
+- Public insert policies are intentionally permissive and need
   rate limiting, abuse protection, and a transaction-safe order API.
 - The Supabase security advisor reports a pre-existing
   `public.rls_auto_enable()` security-definer function as executable by `anon`
@@ -43,7 +42,7 @@ These gaps are intentional or incomplete in the current BrewLoop MVP scaffold.
 - Menu items can be added, edited, activated, and hidden; permanent deletion is
   deferred.
 - Structured modifiers, payments, messaging, and POS integrations remain out of
-  v1 scope by decision.
+  the current pilot scope by decision.
 
 ## Testing
 

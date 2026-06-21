@@ -32,7 +32,7 @@ Build around this wedge first:
 
 > QR ordering plus loyalty capture for local cafes.
 
-Keep v1 focused on:
+Keep the current pilot scope focused on:
 
 - public cafe page
 - QR menu
@@ -42,7 +42,7 @@ Keep v1 focused on:
 - customer capture
 - basic loyalty progress
 
-Do not expand v1 into payments, native apps, inventory, payroll, deep POS integrations, or complex campaigns unless Dustin explicitly changes scope.
+Do not expand the current pilot into payments, native apps, inventory, payroll, deep POS integrations, or complex campaigns unless Dustin explicitly changes scope.
 
 ## Stack
 
@@ -75,7 +75,7 @@ Before editing, choose the route that matches the task.
 - No payments in v1.
 - Menus live inside BrewLoop.
 - New cafes should be configuration, not custom code.
-- V1 uses notes for drink customization.
+- The current pilot uses notes for drink customization.
 - Structured modifiers/options come later.
 - Shared SaaS hosting is the default.
 - Client-owned deployment is optional and premium.
