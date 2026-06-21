@@ -1,0 +1,93 @@
+name: Auto-close related issues
+
+on:
+  pull_request_target:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  close-related-issues:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out trusted default-branch automation
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - name: Close explicitly related issues
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        with:
+          script: |
+            const {
+              extractRelatedIssueNumbers,
+            } = require("./.github/scripts/related-issues.cjs");
+
+            const issueNumbers = extractRelatedIssueNumbers(
+              process.env.PR_BODY ?? "",
+            );
+
+            if (issueNumbers.length === 0) {
+              core.info("No Auto-close or Related issues references found.");
+              return;
+            }
+
+            for (const issue_number of issueNumbers) {
+              if (issue_number === Number(process.env.PR_NUMBER)) {
+                core.warning(`Skipping #${issue_number}: it is the merged PR.`);
+                continue;
+              }
+
+              let issue;
+              try {
+                const response = await github.rest.issues.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number,
+                });
+                issue = response.data;
+              } catch (error) {
+                if (error.status === 404) {
+                  core.warning(`Skipping #${issue_number}: issue not found.`);
+                  continue;
+                }
+                throw error;
+              }
+
+              if (issue.pull_request) {
+                core.warning(`Skipping #${issue_number}: it is a pull request.`);
+                continue;
+              }
+
+              if (issue.state === "closed") {
+                core.info(`Skipping #${issue_number}: it is already closed.`);
+                continue;
+              }
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number,
+                body: `Closed automatically after ${process.env.PR_URL} was merged.`,
+              });
+
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number,
+                state: "closed",
+                state_reason: "completed",
+              });
+
+              core.info(`Closed issue #${issue_number}.`);
+            }
