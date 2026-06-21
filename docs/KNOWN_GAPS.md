@@ -38,9 +38,10 @@ These gaps are intentional or incomplete in the current BrewLoop MVP scaffold.
 
 - Loyalty uses one fixed ten-visit rule in the demo. Configurable rules,
   redemption, and transaction history are deferred.
-- Menu category creation/editing is not yet exposed in the UI.
-- Item edits currently cover adding and active/inactive status, not full field
-  editing or deletion.
+- Menu categories can be added, renamed, and deleted when empty; drag-and-drop
+  reordering is deferred.
+- Menu items can be added, edited, activated, and hidden; permanent deletion is
+  deferred.
 - Structured modifiers, payments, messaging, and POS integrations remain out of
   v1 scope by decision.
 
