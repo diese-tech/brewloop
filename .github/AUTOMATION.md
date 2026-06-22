@@ -30,3 +30,18 @@ The parser is covered by:
 ```bash
 node --test .github/scripts/related-issues.node-test.mjs
 ```
+
+## Quality checks
+
+`.github/workflows/quality.yml` runs on pull requests and pushes to `main`.
+
+It verifies:
+
+- ESLint
+- Vitest unit tests
+- The issue-closing parser tests
+- The production Next.js build
+- Playwright customer, staff, and owner browser flows
+
+Four known-gap Playwright cases remain explicitly marked `fixme` until their
+product behavior is implemented.

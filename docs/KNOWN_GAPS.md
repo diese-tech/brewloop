@@ -58,4 +58,8 @@ These gaps remain unresolved in the current BrewLoop product.
   progress.
 - Integration tests for database mutations, RLS, and status transitions are
   still required.
-- Playwright smoke tests for customer, staff, and owner flows are still required.
+- The checked-in Playwright suite covers the browser-storage demo flows for
+  customers, staff order progression, and owner menu management.
+- Four Playwright tests are explicitly marked `fixme` until owner customer
+  synchronization, reward lookup/redemption, and staff/owner authentication are
+  implemented.
