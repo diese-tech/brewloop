@@ -141,5 +141,5 @@ export const demoLoyaltyAccounts: LoyaltyAccount[] = [
 ];
 
 export function getCafeBySlug(slug: string) {
-  return slug === demoCafe.slug || slug === "demo-coffee" ? demoCafe : null;
+  return slug === demoCafe.slug ? demoCafe : null;
 }

@@ -5,12 +5,12 @@ It provides a branded public menu, pickup/table order flow, staff queue, owner
 menu tools, customer capture, and basic visit rewards without replacing the
 café's existing POS.
 
-## Current MVP
+## Current prototype
 
-- Public demo café at `/cafe/demo-coffee`
-- Mobile ordering at `/cafe/demo-coffee/order`
-- Table QR support, for example `/cafe/demo-coffee/order?t=12`
-- Phone/email rewards at `/cafe/demo-coffee/rewards`
+- Black Rabbit pilot at `/cafe/black-rabbit`
+- Mobile ordering at `/cafe/black-rabbit/order`
+- Table QR support, for example `/cafe/black-rabbit/order?t=12`
+- Phone/email rewards at `/cafe/black-rabbit/rewards`
 - Staff status board at `/staff/orders`
 - Owner dashboard and menu management under `/dashboard`
 - Supabase schema, tenant-aware RLS policies, Realtime publication, and seed data
@@ -72,7 +72,8 @@ see `docs/KNOWN_GAPS.md`.
 
 ## Product boundaries
 
-The current pilot scope intentionally excludes payments, Telegram, native apps,
-inventory, payroll, deep POS integrations, and complex marketing campaigns.
+The current pilot includes simulated card checkout and tipping, but does not
+process real payments. It excludes Telegram, native apps, inventory, payroll,
+deep POS integrations, and complex marketing campaigns.
 See `CODEX.md` and the ADRs in `docs/ADR/` for the durable product and
 architecture decisions.
