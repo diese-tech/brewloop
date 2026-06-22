@@ -66,7 +66,7 @@ Before editing, choose the route that matches the task.
 | Product direction, roadmap, scope | `docs/DECISIONS.md`, `docs/ROADMAP.md`, `docs/ADR/0001-product-scope.md` |
 | Schema, tenant model, Supabase, RLS, auth | `docs/DECISIONS.md`, `docs/ADR/0002-multi-tenant-architecture.md`, `docs/PRODUCTION_READINESS.md` |
 | Menu setup, imports, item options | `docs/MENU_ONBOARDING.md`, `docs/ADR/0004-menu-and-modifiers.md`, `docs/DECISIONS.md` |
-| Customer/staff/owner UX | `docs/ROADMAP.md`, `docs/ADR/0001-product-scope.md`, `docs/MENU_ONBOARDING.md` |
+| Prototype UI, customer/staff/owner UX, demo polish | `design.md`, `docs/ROADMAP.md`, `docs/ADR/0001-product-scope.md`, `docs/MENU_ONBOARDING.md` |
 | Testing, deployment, launch readiness | `docs/PRODUCTION_READINESS.md`, `docs/ADR/0002-multi-tenant-architecture.md` |
 | SaaS vs client-owned hosting | `docs/CLIENT_OWNED_INFRASTRUCTURE.md`, `docs/ADR/0003-hosting-and-business-model.md` |
 | Documentation updates | `docs/DECISIONS.md` and the relevant ADR/topical doc |
@@ -82,6 +82,7 @@ Before editing, choose the route that matches the task.
 - Shared SaaS hosting is the default.
 - Client-owned deployment is optional and premium.
 - Tenant-owned data is separated by `cafe_id`.
+- Prototype/UI work should follow `design.md`.
 
 ## Implementation rules
 
