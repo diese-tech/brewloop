@@ -27,10 +27,10 @@ The v1 product will focus on:
 - Customer capture
 - Basic loyalty progress
 - Owner menu management
+- Online card payment and tipping
 
 BrewLoop will not include these in v1:
 
-- Payment processing
 - Native mobile apps
 - Telegram dependency
 - SMS marketing
@@ -63,30 +63,35 @@ Reasons:
 
 ## Payment decision
 
-BrewLoop will avoid payments in v1.
+BrewLoop will include online card payment and tipping in the Black Rabbit v1
+pilot.
 
 Reasons:
 
-- Payments create refund, payout, tax, reconciliation, and support complexity.
-- Shops can keep using their existing register/POS during pilots.
-- The first validation target is whether shops value QR ordering, customer capture, and loyalty.
+- The approved Black Rabbit pilot preview defines payment as part of the
+  customer journey.
+- A complete scan-to-paid-order flow is more representative of the intended
+  guest experience.
+- Payment processing remains separate from POS replacement or deep POS
+  integration.
 
 ## Consequences
 
 Positive:
 
 - Faster MVP
-- Less support burden
-- Easier pilot conversations
-- Stronger focus on the repeat-customer value proposition
+- A more complete and convincing customer pilot
+- Clear paid status for staff operations
+- Tip capture in the digital flow
 
 Negative:
 
-- Customers may still need to pay at the counter/register.
-- Some owners may expect payments eventually.
-- Staff may need to reconcile BrewLoop orders with their existing register manually during pilots.
+- Refund, tax, payout, reconciliation, dispute, and webhook requirements must
+  be resolved before production transactions.
+- Staff may still need to reconcile BrewLoop orders with the existing register.
 
 ## Follow-ups
 
-- Revisit payments only after a pilot validates core demand.
+- Select and integrate a payment processor before accepting real transactions.
+- Define refund, tax, payout, reconciliation, and support procedures.
 - Revisit messaging after phone/email opt-in and compliance requirements are defined.

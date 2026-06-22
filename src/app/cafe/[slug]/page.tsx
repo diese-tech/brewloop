@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Gift, MapPin, ShoppingBag } from "lucide-react";
+import { ArrowRight, BookOpen, Gift, MapPin, ShoppingBag } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCafeBySlug } from "@/lib/demo-data";
 
 export const metadata: Metadata = {
-  title: "Demo Coffee",
+  title: "The Black Rabbit Bookbar",
 };
 
 export default async function CafePage({
@@ -22,69 +22,125 @@ export default async function CafePage({
   if (!cafe) notFound();
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-12 sm:py-20">
-      <Badge className="mb-5" variant="secondary">
-        Open today · 7am–4pm
-      </Badge>
-      <div className="grid items-end gap-8 lg:grid-cols-[1fr_26rem]">
-        <div>
-          <h1 className="text-5xl font-semibold tracking-tight sm:text-7xl">
-            {cafe.name}
-          </h1>
-          <p className="mt-5 max-w-2xl text-xl leading-8 text-muted-foreground">
-            {cafe.tagline}
-          </p>
-          <p className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="size-4" /> 101 Main Street · Your neighborhood
-          </p>
+    <main>
+      <section className="relative overflow-hidden border-b border-border">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_22%,rgb(201_160_110_/_18%),transparent_18rem),radial-gradient(circle_at_14%_0%,rgb(122_27_43_/_45%),transparent_30rem)]" />
+        <div className="relative mx-auto grid min-h-[34rem] max-w-6xl items-center gap-10 px-6 py-16 lg:grid-cols-[1fr_25rem]">
+          <div>
+            <Badge className="mb-6 bg-background/35" variant="outline">
+              {cafe.hours}
+            </Badge>
+            <p className="catalog-label mb-4">The Black Rabbit Bookbar</p>
+            <h1 className="max-w-3xl text-6xl font-semibold leading-[0.88] tracking-tight sm:text-8xl">
+              Enter the rabbit hole.
+            </h1>
+            <p className="mt-6 max-w-2xl font-heading text-2xl italic leading-8 text-muted-foreground">
+              {cafe.tagline}
+            </p>
+            <p className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
+              <MapPin className="size-4" /> {cafe.address}
+            </p>
+          </div>
+          <Card className="parchment-card">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+                  Coven card · loyalty
+                </span>
+                <span className="font-mono text-[0.6rem] text-[var(--ink-muted)]">
+                  7 of 10
+                </span>
+              </div>
+              <CardTitle className="mt-2 text-3xl text-[var(--ink)]">
+                3 moons from a free pour.
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="flex flex-wrap gap-2" aria-label="7 of 10 visits">
+                {Array.from({ length: 10 }).map((_, index) =>
+                  index < 7 ? (
+                    <span key={index} className="moon-stamp" />
+                  ) : (
+                    <span key={index} className="moon-stamp-empty" />
+                  ),
+                )}
+              </div>
+              <Button asChild size="lg" className="w-full justify-between">
+                <Link href={`/cafe/${slug}/rewards`}>
+                  <span className="flex items-center gap-2">
+                    <Gift /> Join / check rewards
+                  </span>
+                  <ArrowRight />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="w-full justify-between border-[var(--ink-muted)] bg-transparent text-[var(--ink)] hover:bg-black/5 hover:text-[var(--ink)]"
+              >
+                <Link href={`/cafe/${slug}/order`}>
+                  <span className="flex items-center gap-2">
+                    <ShoppingBag /> Order now
+                  </span>
+                  <ArrowRight />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
-        <Card className="bg-card/90 shadow-lg">
-          <CardHeader>
-            <CardTitle>What would you like to do?</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button asChild size="lg" className="w-full justify-between">
-              <Link href={`/cafe/${slug}/order`}>
-                <span className="flex items-center gap-2">
-                  <ShoppingBag /> Browse menu
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-14">
+        <div className="flex items-end justify-between gap-6">
+          <div>
+            <p className="catalog-label">From the spellbook</p>
+            <h2 className="mt-2 text-4xl font-semibold">Signature potions</h2>
+          </div>
+          <span className="catalog-label">{cafe.items.length} featured</span>
+        </div>
+        <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {cafe.items.slice(0, 6).map((item) => (
+            <Card key={item.id} className="parchment-card min-h-48">
+              <CardHeader>
+                <span className="font-mono text-[0.55rem] uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+                  Tincture
                 </span>
-                <ArrowRight />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="w-full justify-between"
-            >
-              <Link href={`/cafe/${slug}/rewards`}>
-                <span className="flex items-center gap-2">
-                  <Gift /> View rewards
-                </span>
-                <ArrowRight />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-      <section className="mt-16 border-t pt-10">
-        <p className="font-mono text-xs uppercase tracking-[0.22em] text-muted-foreground">
-          Built for the everyday stop
-        </p>
-        <div className="mt-5 grid gap-4 md:grid-cols-3">
-          {[
-            ["Order ahead", "Send your order to the bar before you arrive."],
-            ["Stay flexible", "Choose pickup or let us know your table number."],
-            ["Come back sooner", "Track simple visit rewards by phone or email."],
-          ].map(([title, copy]) => (
-            <div key={title} className="rounded-xl border bg-card/60 p-5">
-              <h2 className="font-semibold">{title}</h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                {copy}
-              </p>
-            </div>
+                <CardTitle className="text-2xl text-[var(--ink)]">
+                  {item.name}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-1 flex-col justify-between">
+                <p className="font-mono text-[0.6rem] uppercase leading-5 text-[var(--ink-muted)]">
+                  {item.description}
+                </p>
+                <div className="mt-6 flex items-center justify-between font-mono text-[var(--ink)]">
+                  <span>${(item.priceCents / 100).toFixed(2)}</span>
+                  <Button asChild size="icon">
+                    <Link href={`/cafe/${slug}/order`} aria-label={`Order ${item.name}`}>
+                      <ArrowRight />
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
+        <div className="mt-8 grid gap-3 sm:grid-cols-2">
+          <Button variant="outline" size="lg" className="h-14 justify-between">
+            <span className="flex items-center gap-3">
+              <BookOpen /> {cafe.externalLabel}
+            </span>
+            <ArrowRight />
+          </Button>
+          <Button variant="outline" size="lg" className="h-14 justify-between">
+            <span>Follow The Black Rabbit</span>
+            <ArrowRight />
+          </Button>
+        </div>
+        <p className="powered-by mt-14 border-t border-border pt-7 text-center">
+          Powered by BrewLoop by ThreeTails
+        </p>
       </section>
     </main>
   );

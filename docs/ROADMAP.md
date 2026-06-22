@@ -9,6 +9,7 @@ The long-term goal is not to replace Square, Toast, Clover, Shopify POS, or othe
 - A branded QR menu
 - Lightweight table or pickup ordering
 - Staff order queue
+- Online card payment and tipping
 - Customer capture
 - Loyalty rewards
 - Repeat-visit marketing
@@ -157,7 +158,7 @@ Integrations should reduce duplicate work. They should not be mandatory for the 
 - Repeat visit rate
 - Loyalty conversion rate
 - Campaign conversion tracking
-- Estimated revenue from captured orders, if payment integration exists later
+- Payment and tip analytics
 - Exportable CSV reports
 
 #### Customer experience
@@ -178,7 +179,6 @@ Integrations should reduce duplicate work. They should not be mandatory for the 
 
 Avoid these until after a real pilot validates demand:
 
-- Payment processing
 - Deep POS integration
 - Complex campaign builders
 - AI recommendation engines

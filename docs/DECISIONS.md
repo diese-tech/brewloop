@@ -58,7 +58,6 @@ Why:
 Deferred:
 
 - Full POS replacement
-- Payment processing
 - Inventory management
 - Staff scheduling/payroll
 - Native mobile app
@@ -78,14 +77,23 @@ Replacement model:
 - Phone/email for loyalty signup
 - Email/SMS as future optional campaign channels
 
-### 4. No payments in the current pilot
+### 4. Online payment in the Black Rabbit pilot
 
-BrewLoop's current pilot avoids payment processing.
+BrewLoop's Black Rabbit v1 pilot includes card payment and tipping in the
+customer checkout flow.
 
 Reason:
 
-- Payments add refund, tax, payout, reconciliation, and support complexity.
-- Early validation only needs menu browsing, lightweight orders, staff queue, and loyalty capture.
+- The approved pilot preview treats payment as part of the complete branded
+  ordering experience.
+- The pilot should validate the full scan-to-paid-order journey rather than
+  stopping at an unpaid queue entry.
+
+Constraint:
+
+- The current implementation is a UI simulation. A production processor,
+  refunds, taxes, payouts, reconciliation, and webhook handling remain required
+  before real transactions can be accepted.
 
 ### 5. Menu data belongs in BrewLoop
 

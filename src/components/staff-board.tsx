@@ -56,7 +56,20 @@ export function StaffBoard() {
         return (
           <section key={column.status} className="rounded-xl bg-muted/55 p-3">
             <div className="mb-3 flex items-center justify-between px-1">
-              <h2 className="font-semibold">{column.label}</h2>
+              <h2 className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em]">
+                <span
+                  className={`size-2 rounded-full ${
+                    column.status === "new"
+                      ? "bg-[var(--warning)]"
+                      : column.status === "making"
+                        ? "bg-primary"
+                        : column.status === "ready"
+                          ? "bg-[var(--success)]"
+                          : "bg-muted-foreground"
+                  }`}
+                />
+                {column.label}
+              </h2>
               <Badge variant="secondary">{columnOrders.length}</Badge>
             </div>
             <div className="space-y-3">
@@ -102,7 +115,8 @@ export function StaffBoard() {
                         })}
                       </span>
                       <span className="font-mono">
-                        {formatCurrency(order.totalCents)}
+                        {formatCurrency(order.totalCents)}{" "}
+                        {order.paymentStatus === "paid" ? "paid" : "due"}
                       </span>
                     </div>
                     {nextStatus[order.status] && (

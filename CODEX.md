@@ -42,7 +42,9 @@ Keep the current pilot scope focused on:
 - customer capture
 - basic loyalty progress
 
-Do not expand the current pilot into payments, native apps, inventory, payroll, deep POS integrations, or complex campaigns unless Dustin explicitly changes scope.
+Do not expand the current pilot into native apps, inventory, payroll, deep POS
+integrations, or complex campaigns unless Dustin explicitly changes scope.
+The Black Rabbit pilot includes online card checkout and tipping.
 
 ## Stack
 
@@ -72,7 +74,7 @@ Before editing, choose the route that matches the task.
 ## Accepted decisions
 
 - No Telegram dependency.
-- No payments in v1.
+- Online payment and tipping are part of the Black Rabbit v1 pilot.
 - Menus live inside BrewLoop.
 - New cafes should be configuration, not custom code.
 - The current pilot uses notes for drink customization.

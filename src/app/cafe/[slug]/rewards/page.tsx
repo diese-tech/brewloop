@@ -15,14 +15,12 @@ export default async function RewardsPage({
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
       <div className="mb-10 max-w-2xl">
-        <p className="font-mono text-xs uppercase tracking-[0.22em] text-muted-foreground">
-          Demo Coffee rewards
-        </p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight">
-          Ten visits. One thank-you on us.
+        <p className="catalog-label">Coven card · loyalty</p>
+        <h1 className="mt-2 text-5xl font-semibold tracking-tight">
+          Collect 10 moons.
         </h1>
         <p className="mt-3 text-muted-foreground">
-          Use either your phone or email to join and check progress.
+          The next drink is on the house. No app and no password.
         </p>
       </div>
       <RewardsPanel cafe={cafe} />
