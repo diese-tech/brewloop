@@ -32,6 +32,9 @@ export type CafeOrder = {
   orderType: OrderType;
   tableNumber?: string;
   notes: string;
+  subtotalCents?: number;
+  tipCents?: number;
+  paymentStatus?: "paid" | "unpaid";
   totalCents: number;
   items: OrderItem[];
   createdAt: string;
@@ -53,6 +56,9 @@ export type Cafe = {
   slug: string;
   tagline: string;
   primaryColor: string;
+  address?: string;
+  hours?: string;
+  externalLabel?: string;
   categories: MenuCategory[];
   items: MenuItem[];
 };

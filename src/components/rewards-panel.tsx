@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Gift } from "lucide-react";
+import Link from "next/link";
+import { Check, MoonStar } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,29 +14,29 @@ import type { Cafe } from "@/lib/types";
 
 export function RewardsPanel({ cafe }: { cafe: Cafe }) {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [contact, setContact] = useState("");
   const [visits, setVisits] = useState<number | null>(null);
 
   function findOrJoin() {
-    if (!email.trim() && !phone.trim()) return;
+    if (!contact.trim()) return;
     const accounts = demoStore.getLoyalty();
+    const normalized = contact.trim().toLowerCase();
     const existing = accounts.find(
       (account) =>
-        (email && account.email.toLowerCase() === email.toLowerCase()) ||
-        (phone && account.phone === phone),
+        account.email.toLowerCase() === normalized || account.phone === contact.trim(),
     );
     if (existing) {
       setName(existing.name);
       setVisits(existing.visits);
       return;
     }
+    const isEmail = contact.includes("@");
     const account = {
       id: crypto.randomUUID(),
       cafeId: cafe.id,
-      name: name.trim() || "Coffee regular",
-      email: email.trim(),
-      phone: phone.trim(),
+      name: name.trim() || "Bookbar regular",
+      email: isEmail ? contact.trim() : "",
+      phone: isEmail ? "" : contact.trim(),
       visits: 1,
       points: 10,
     };
@@ -44,83 +45,77 @@ export function RewardsPanel({ cafe }: { cafe: Cafe }) {
   }
 
   const progress = visits === null ? null : loyaltyProgress(visits);
+  const current = progress?.current ?? 7;
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      <Card className="bg-card/90">
+    <div className="grid gap-6 md:grid-cols-[1.05fr_0.95fr]">
+      <Card className="parchment-card">
         <CardHeader>
-          <CardTitle>Find or join your rewards</CardTitle>
+          <span className="font-mono text-[0.58rem] uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+            Your moon card
+          </span>
+          <CardTitle className="mt-2 text-4xl text-[var(--ink)]">
+            {progress
+              ? `Welcome, ${name || "regular"}.`
+              : `${10 - current} moons from a free pour.`}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-5 gap-4">
+            {Array.from({ length: 10 }).map((_, index) =>
+              index < current ? (
+                <span key={index} className="moon-stamp" />
+              ) : (
+                <span key={index} className="moon-stamp-empty" />
+              ),
+            )}
+          </div>
+          <p className="mt-7 text-sm leading-6 text-[var(--ink-muted)]">
+            Collect 10 moons and the next drink is on the house. One moon is
+            added with every qualifying visit.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <MoonStar className="size-6 text-[var(--brass-bright)]" />
+          <CardTitle className="mt-2 text-3xl">Join / check rewards</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="reward-name">Name</Label>
+            <Label htmlFor="reward-contact">Phone or email</Label>
+            <Input
+              id="reward-contact"
+              value={contact}
+              onChange={(event) => setContact(event.target.value)}
+              placeholder="(352) 555-0148"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="reward-name">Name (optional)</Label>
             <Input
               id="reward-name"
               value={name}
               onChange={(event) => setName(event.target.value)}
+              placeholder="What should we call you?"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="reward-email">Email</Label>
-            <Input
-              id="reward-email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="reward-phone">Phone</Label>
-            <Input
-              id="reward-phone"
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-            />
-          </div>
+          <p className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Check className="size-3.5" /> No app. No password. Just moons.
+          </p>
           <Button
-            className="w-full"
-            disabled={!email.trim() && !phone.trim()}
+            className="h-11 w-full"
+            disabled={!contact.trim()}
             onClick={findOrJoin}
           >
-            Check progress
+            Join / check rewards
           </Button>
-        </CardContent>
-      </Card>
-      <Card className="overflow-hidden bg-primary text-primary-foreground">
-        <CardHeader>
-          <Gift className="size-7" />
-          <CardTitle className="text-2xl">
-            {progress ? `Welcome, ${name || "regular"}` : "Your next cup counts"}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {progress ? (
-            <>
-              <div className="grid grid-cols-5 gap-3">
-                {Array.from({ length: progress.threshold }).map((_, index) => (
-                  <span
-                    key={index}
-                    className={`flex aspect-square items-center justify-center rounded-full border ${
-                      index < progress.current
-                        ? "bg-primary-foreground text-primary"
-                        : "border-primary-foreground/45"
-                    }`}
-                  >
-                    {index < progress.current && <Check className="size-4" />}
-                  </span>
-                ))}
-              </div>
-              <p className="mt-6 text-sm text-primary-foreground/80">
-                {progress.threshold - progress.current} visits until your next
-                reward. Rewards earned so far: {progress.rewardsEarned}.
-              </p>
-            </>
-          ) : (
-            <p className="max-w-sm text-primary-foreground/80">
-              Join with a phone number or email. No app download and no separate
-              customer account required.
-            </p>
-          )}
+          <Button asChild variant="link" className="w-full text-muted-foreground">
+            <Link href={`/cafe/${cafe.slug}/order`}>
+              Skip — just let me order →
+            </Link>
+          </Button>
         </CardContent>
       </Card>
     </div>

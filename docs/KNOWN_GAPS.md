@@ -41,8 +41,16 @@ These gaps remain unresolved in the current BrewLoop product.
   reordering is deferred.
 - Menu items can be added, edited, activated, and hidden; permanent deletion is
   deferred.
-- Structured modifiers, payments, messaging, and POS integrations remain out of
-  the current pilot scope by decision.
+- Structured modifiers, messaging, and POS integrations remain out of the
+  current pilot scope.
+
+## Payments
+
+- The Black Rabbit checkout is currently a browser-demo simulation and does not
+  transmit or tokenize card data.
+- A production payment provider, server-side payment intent flow, webhook
+  verification, refunds, taxes, payouts, reconciliation, dispute handling, and
+  operational support procedures are still required.
 
 ## Testing
 
@@ -50,4 +58,8 @@ These gaps remain unresolved in the current BrewLoop product.
   progress.
 - Integration tests for database mutations, RLS, and status transitions are
   still required.
-- Playwright smoke tests for customer, staff, and owner flows are still required.
+- The checked-in Playwright suite covers the browser-storage demo flows for
+  customers, staff order progression, and owner menu management.
+- Four Playwright tests are explicitly marked `fixme` until owner customer
+  synchronization, reward lookup/redemption, and staff/owner authentication are
+  implemented.

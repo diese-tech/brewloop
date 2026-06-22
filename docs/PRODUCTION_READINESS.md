@@ -133,13 +133,20 @@ Minimum useful test layers:
 
 ### E2E smoke tests
 
-Use Playwright or equivalent for:
+The checked-in Playwright suite covers:
 
 - Public menu loads
 - Customer submits pickup order
 - Customer submits table order with `?t=12`
 - Staff marks order making/ready/completed
 - Owner creates or edits menu item
+
+The suite currently runs against the browser-storage demo adapter. Database,
+RLS, authentication, and real payment integration still require separate
+integration coverage.
+
+GitHub Actions runs the unit, build, parser, lint, and Playwright suites on pull
+requests and pushes to `main`.
 
 ## Observability baseline
 

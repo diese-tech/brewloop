@@ -16,16 +16,16 @@ export default async function OrderPage({
   if (!cafe) notFound();
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
+    <main className="mx-auto max-w-6xl px-5 py-8 sm:px-6 sm:py-10">
       <div className="mb-10">
-        <p className="font-mono text-xs uppercase tracking-[0.22em] text-muted-foreground">
+        <p className="catalog-label">
           {t ? `Table ${t}` : "Pickup or table service"}
         </p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight">
-          Order from {cafe.name}
+        <h1 className="mt-2 text-5xl font-semibold tracking-tight">
+          Choose your potion.
         </h1>
         <p className="mt-3 text-muted-foreground">
-          No online payment. Pay at the café when your order is ready.
+          Customize with a note, pay securely, and we’ll call your name.
         </p>
       </div>
       <OrderBuilder cafe={cafe} initialTable={t} />
