@@ -53,6 +53,7 @@ export type Database = {
       }
       cafes: {
         Row: {
+          accepting_orders: boolean
           address: string | null
           created_at: string
           external_label: string | null
@@ -67,6 +68,7 @@ export type Database = {
           tagline: string | null
         }
         Insert: {
+          accepting_orders?: boolean
           address?: string | null
           created_at?: string
           external_label?: string | null
@@ -81,6 +83,7 @@ export type Database = {
           tagline?: string | null
         }
         Update: {
+          accepting_orders?: boolean
           address?: string | null
           created_at?: string
           external_label?: string | null

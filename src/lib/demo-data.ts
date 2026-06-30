@@ -9,6 +9,7 @@ export const demoCafe: Cafe = {
   address: "Clermont, Florida",
   hours: "Open today · 7am–10pm",
   externalLabel: "Browse book club nights",
+  acceptingOrders: true,
   categories: [
     { id: "potions", name: "Signature Potions", sortOrder: 1 },
     { id: "bites", name: "Books & Bites", sortOrder: 2 },

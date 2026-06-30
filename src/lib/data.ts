@@ -25,6 +25,7 @@ export async function getCafeBySlug(slug: string): Promise<Cafe | null> {
     address: cafe.address ?? undefined,
     hours: cafe.hours ?? undefined,
     externalLabel: cafe.external_label ?? undefined,
+    acceptingOrders: cafe.accepting_orders,
     categories: cafe.menu_categories
       .map((category) => ({
         id: category.id,

@@ -58,6 +58,35 @@ test.describe("customer experience", () => {
     await expect(appPage.getByText(/Visa ••42/i)).toBeVisible();
   });
 
+  test("removes an item from the order summary", async ({ appPage }) => {
+    await appPage.goto("/cafe/black-rabbit/order");
+
+    await appPage
+      .getByRole("button", { name: "Add one Be My Frankenstein" })
+      .click();
+    await appPage.getByLabel("Name", { exact: true }).fill("Remove Test");
+    await expect(
+      appPage.getByText("1× Be My Frankenstein"),
+    ).toBeVisible();
+    await expect(
+      appPage.getByRole("button", { name: "Continue to payment" }),
+    ).toBeEnabled();
+
+    await appPage
+      .getByRole("button", { name: "Remove Be My Frankenstein from order" })
+      .click();
+
+    await expect(
+      appPage.getByText("1× Be My Frankenstein"),
+    ).not.toBeVisible();
+    await expect(
+      appPage.getByText("Add a potion to begin your order."),
+    ).toBeVisible();
+    await expect(
+      appPage.getByRole("button", { name: "Continue to payment" }),
+    ).toBeDisabled();
+  });
+
   test("preserves the table number and submits a table order", async ({
     appPage,
   }) => {
