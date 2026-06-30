@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 
 import { RewardsPanel } from "@/components/rewards-panel";
-import { getCafeBySlug } from "@/lib/demo-data";
+import { isDemoMode } from "@/lib/config";
+import { getCafeBySlug } from "@/lib/data";
 
 export default async function RewardsPage({
   params,
@@ -9,7 +10,7 @@ export default async function RewardsPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const cafe = getCafeBySlug(slug);
+  const cafe = await getCafeBySlug(slug);
   if (!cafe) notFound();
 
   return (
@@ -23,7 +24,7 @@ export default async function RewardsPage({
           The next drink is on the house. No app and no password.
         </p>
       </div>
-      <RewardsPanel cafe={cafe} />
+      <RewardsPanel cafe={cafe} demoMode={isDemoMode()} />
     </main>
   );
 }

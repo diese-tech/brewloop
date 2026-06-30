@@ -53,33 +53,52 @@ export type Database = {
       }
       cafes: {
         Row: {
+          address: string | null
           created_at: string
+          external_label: string | null
+          hours: string | null
           id: string
           logo_url: string | null
           name: string
           primary_color: string | null
+          square_location_id: string | null
+          square_tax_ids: string[]
           slug: string
+          tagline: string | null
         }
         Insert: {
+          address?: string | null
           created_at?: string
+          external_label?: string | null
+          hours?: string | null
           id?: string
           logo_url?: string | null
           name: string
           primary_color?: string | null
+          square_location_id?: string | null
+          square_tax_ids?: string[]
           slug: string
+          tagline?: string | null
         }
         Update: {
+          address?: string | null
           created_at?: string
+          external_label?: string | null
+          hours?: string | null
           id?: string
           logo_url?: string | null
           name?: string
           primary_color?: string | null
+          square_location_id?: string | null
+          square_tax_ids?: string[]
           slug?: string
+          tagline?: string | null
         }
         Relationships: []
       }
       customers: {
         Row: {
+          auth_user_id: string | null
           cafe_id: string
           created_at: string
           email: string | null
@@ -88,6 +107,7 @@ export type Database = {
           phone: string | null
         }
         Insert: {
+          auth_user_id?: string | null
           cafe_id: string
           created_at?: string
           email?: string | null
@@ -96,6 +116,7 @@ export type Database = {
           phone?: string | null
         }
         Update: {
+          auth_user_id?: string | null
           cafe_id?: string
           created_at?: string
           email?: string | null
@@ -326,10 +347,18 @@ export type Database = {
           customer_name: string | null
           customer_phone: string | null
           id: string
+          idempotency_key: string
+          loyalty_awarded_at: string | null
           notes: string | null
           order_type: string
+          payment_status: string
+          square_order_id: string | null
+          square_payment_id: string | null
           status: string
+          subtotal_cents: number
           table_number: string | null
+          tax_cents: number
+          tip_cents: number
           total_cents: number
         }
         Insert: {
@@ -339,10 +368,18 @@ export type Database = {
           customer_name?: string | null
           customer_phone?: string | null
           id?: string
+          idempotency_key?: string
+          loyalty_awarded_at?: string | null
           notes?: string | null
           order_type: string
+          payment_status?: string
+          square_order_id?: string | null
+          square_payment_id?: string | null
           status?: string
+          subtotal_cents?: number
           table_number?: string | null
+          tax_cents?: number
+          tip_cents?: number
           total_cents?: number
         }
         Update: {
@@ -352,10 +389,18 @@ export type Database = {
           customer_name?: string | null
           customer_phone?: string | null
           id?: string
+          idempotency_key?: string
+          loyalty_awarded_at?: string | null
           notes?: string | null
           order_type?: string
+          payment_status?: string
+          square_order_id?: string | null
+          square_payment_id?: string | null
           status?: string
+          subtotal_cents?: number
           table_number?: string | null
+          tax_cents?: number
+          tip_cents?: number
           total_cents?: number
         }
         Relationships: [
@@ -399,6 +444,27 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          payload: Json
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id: string
+          payload: Json
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          payload?: Json
+        }
+        Relationships: []
+      }
       promotions: {
         Row: {
           active: boolean
@@ -439,7 +505,31 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      apply_paid_order: {
+        Args: {
+          p_order_id: string
+          p_square_order_id: string
+          p_square_payment_id: string
+          p_tax_cents: number
+          p_total_cents: number
+        }
+        Returns: undefined
+      }
+      create_pending_order: {
+        Args: {
+          p_auth_user_id?: string | null
+          p_cafe_id: string
+          p_customer_name: string
+          p_customer_phone: string
+          p_idempotency_key: string
+          p_items: Json
+          p_notes: string
+          p_order_type: string
+          p_table_number: string
+          p_tip_cents: number
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

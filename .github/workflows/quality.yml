@@ -41,6 +41,8 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          BREWLOOP_DEMO_MODE: "true"
 
   browser:
     runs-on: ubuntu-latest
@@ -63,3 +65,5 @@ jobs:
 
       - name: Run Playwright tests
         run: npm run test:e2e
+        env:
+          BREWLOOP_DEMO_MODE: "true"

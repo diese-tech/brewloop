@@ -1,7 +1,12 @@
 import { AppNav } from "@/components/app-nav";
 import { StaffBoard } from "@/components/staff-board";
+import { requireCafeMember } from "@/lib/auth";
+import { isDemoMode } from "@/lib/config";
+import { getStaffOrders } from "@/lib/data";
 
-export default function StaffOrdersPage() {
+export default async function StaffOrdersPage() {
+  const member = await requireCafeMember();
+  const orders = await getStaffOrders(member.cafeId);
   return (
     <>
       <AppNav />
@@ -13,7 +18,11 @@ export default function StaffOrdersPage() {
           </h1>
         </div>
         <div className="mx-auto max-w-[90rem] overflow-x-auto pb-4">
-          <StaffBoard />
+          <StaffBoard
+            cafeId={member.cafeId}
+            demoMode={isDemoMode()}
+            initialOrders={orders}
+          />
         </div>
       </main>
     </>

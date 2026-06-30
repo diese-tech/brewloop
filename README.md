@@ -35,6 +35,10 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+The copied environment runs the browser-storage prototype because
+`BREWLOOP_DEMO_MODE=true`. Production must set it to `false` and provide every
+Supabase, Square, application URL, and QR-signing variable.
+
 Useful checks:
 
 ```bash
@@ -45,11 +49,7 @@ npm run build
 
 ## Environment variables
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-```
+See `.env.example` for the complete list.
 
 The service-role key must remain server-only. Never expose it through a
 `NEXT_PUBLIC_` variable or initialize a service-role client in browser code.
@@ -59,16 +59,24 @@ The service-role key must remain server-only. Never expose it through a
 1. Create a Supabase project.
 2. Install the Supabase CLI if it is not already available.
 3. Link the repository to the project.
-4. Apply `supabase/migrations/20260619011020_initial_schema.sql`.
-5. Run `supabase/seed.sql` for the Demo Coffee records.
+4. Apply every migration in `supabase/migrations`.
+5. Run `supabase/seed.sql` for the Black Rabbit records.
 6. Add the project URL and anon key to `.env.local`.
 
 The migration creates the issue-defined tables, constraints, indexes, RLS
 policies, role helper functions, and an `orders` Realtime publication.
 
-The UI currently uses the local demo adapter. Replacing that adapter with the
-included lazy Supabase browser/server clients is the next integration milestone;
-see `docs/KNOWN_GAPS.md`.
+Production mode reads cafe/menu data from Supabase, creates orders through a
+server transaction, processes Square payments, and uses Supabase Realtime for
+the staff board.
+
+Configure phone OTP with Twilio Verify in the Supabase dashboard. Twilio
+credentials do not belong in this application because Supabase Auth owns SMS
+delivery.
+
+Square requires the public application/location IDs plus a server-only seller
+access token and webhook signature key. Configure its webhook URL as
+`/api/webhooks/square`.
 
 ## Product boundaries
 

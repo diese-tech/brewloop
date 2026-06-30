@@ -6,7 +6,7 @@ import { ArrowRight, BookOpen, Gift, MapPin, ShoppingBag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getCafeBySlug } from "@/lib/demo-data";
+import { getCafeBySlug } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "The Black Rabbit Bookbar",
@@ -18,7 +18,7 @@ export default async function CafePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const cafe = getCafeBySlug(slug);
+  const cafe = await getCafeBySlug(slug);
   if (!cafe) notFound();
 
   return (

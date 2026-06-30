@@ -26,6 +26,10 @@ export default defineConfig({
   webServer: {
     command: `npm run dev -- -p ${port}`,
     url: `http://localhost:${port}`,
+    env: {
+      ...process.env,
+      BREWLOOP_DEMO_MODE: "true",
+    },
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

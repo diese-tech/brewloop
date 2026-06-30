@@ -1,18 +1,19 @@
 import { notFound } from "next/navigation";
 
 import { OrderBuilder } from "@/components/order-builder";
-import { getCafeBySlug } from "@/lib/demo-data";
+import { isDemoMode } from "@/lib/config";
+import { getCafeBySlug } from "@/lib/data";
 
 export default async function OrderPage({
   params,
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ t?: string }>;
+  searchParams: Promise<{ t?: string; sig?: string }>;
 }) {
   const { slug } = await params;
-  const { t } = await searchParams;
-  const cafe = getCafeBySlug(slug);
+  const { t, sig } = await searchParams;
+  const cafe = await getCafeBySlug(slug);
   if (!cafe) notFound();
 
   return (
@@ -28,7 +29,22 @@ export default async function OrderPage({
           Customize with a note, pay securely, and we’ll call your name.
         </p>
       </div>
-      <OrderBuilder cafe={cafe} initialTable={t} />
+      <OrderBuilder
+        cafe={cafe}
+        initialTable={t}
+        tableSignature={sig}
+        demoMode={isDemoMode()}
+        square={{
+          applicationId: process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID ?? "",
+          locationId:
+            cafe.squareLocationId ??
+            process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID ??
+            "",
+          environment: process.env.SQUARE_ENVIRONMENT === "production"
+            ? "production"
+            : "sandbox",
+        }}
+      />
     </main>
   );
 }
