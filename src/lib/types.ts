@@ -62,6 +62,7 @@ export type Cafe = {
   externalLabel?: string;
   squareTaxIds?: string[];
   squareLocationId?: string;
+  acceptingOrders: boolean;
   categories: MenuCategory[];
   items: MenuItem[];
 };

@@ -9,6 +9,7 @@ import {
   Minus,
   Plus,
   ShoppingBag,
+  X,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -144,12 +145,17 @@ export function OrderBuilder({
     customerName.trim() &&
     (orderType === "pickup" || tableNumber.trim());
   const canUseTable = demoMode || Boolean(initialTable && tableSignature);
+  const hasMenuItems = menuItems.some((item) => item.isActive);
 
   function changeQuantity(itemId: string, change: number) {
     setQuantities((current) => ({
       ...current,
       [itemId]: Math.max(0, (current[itemId] ?? 0) + change),
     }));
+  }
+
+  function removeItem(itemId: string) {
+    setQuantities((current) => ({ ...current, [itemId]: 0 }));
   }
 
   async function submitOrder() {
@@ -439,6 +445,18 @@ export function OrderBuilder({
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
       <div className="space-y-10">
+        {!hasMenuItems && (
+          <Card className="border-dashed bg-card/60 text-center">
+            <CardContent className="py-12">
+              <p className="font-heading text-2xl">
+                The spellbook is empty right now.
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Check back soon, or ask staff what&apos;s brewing.
+              </p>
+            </CardContent>
+          </Card>
+        )}
         {[...categories]
           .sort((a, b) => a.sortOrder - b.sortOrder)
           .map((category) => {
@@ -511,12 +529,26 @@ export function OrderBuilder({
             {orderItems.length ? (
               <div className="space-y-2 text-sm">
                 {orderItems.map((item) => (
-                  <div key={item.menuItemId} className="flex justify-between gap-4">
+                  <div
+                    key={item.menuItemId}
+                    className="flex items-center justify-between gap-4"
+                  >
                     <span>
                       {item.quantity}× {item.nameSnapshot}
                     </span>
-                    <span className="font-mono">
-                      {formatCurrency(item.quantity * item.unitPriceCents)}
+                    <span className="flex items-center gap-2">
+                      <span className="font-mono">
+                        {formatCurrency(item.quantity * item.unitPriceCents)}
+                      </span>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="size-6 text-muted-foreground hover:text-destructive"
+                        onClick={() => removeItem(item.menuItemId)}
+                        aria-label={`Remove ${item.nameSnapshot} from order`}
+                      >
+                        <X className="size-3.5" />
+                      </Button>
                     </span>
                   </div>
                 ))}
