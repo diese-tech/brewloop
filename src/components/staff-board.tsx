@@ -93,17 +93,7 @@ export function StaffBoard({
           <section key={column.status} className="rounded-xl bg-muted/55 p-3">
             <div className="mb-3 flex items-center justify-between px-1">
               <h2 className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em]">
-                <span
-                  className={`size-2 rounded-full ${
-                    column.status === "new"
-                      ? "bg-[var(--warning)]"
-                      : column.status === "making"
-                        ? "bg-primary"
-                        : column.status === "ready"
-                          ? "bg-[var(--success)]"
-                          : "bg-muted-foreground"
-                  }`}
-                />
+                <span className={`status-dot status-dot--${column.status}`} />
                 {column.label}
               </h2>
               <Badge variant="secondary">{columnOrders.length}</Badge>

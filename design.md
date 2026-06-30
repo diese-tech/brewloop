@@ -39,3 +39,10 @@ The v1 pilot uses the approved **Parchment & Candlelight** direction for
 
 Cafe-specific content and colors must remain configuration-driven rather than
 requiring custom routes or one-off business logic.
+
+## CSS/markup conventions
+
+App-specific semantic classes (loyalty stamps, parchment cards, status dots,
+catalog labels) follow the BEM convention documented in
+[`docs/BEM_STANDARDS.md`](docs/BEM_STANDARDS.md). Tailwind utilities remain
+the default for layout and one-off styling.

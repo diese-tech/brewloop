@@ -9,7 +9,7 @@ export function BrandMark({
 }) {
   return (
     <Link href={href} className="flex items-center gap-3">
-      <span className="moon-mark" aria-hidden="true" />
+      <span className="brand-mark__moon" aria-hidden="true" />
       <span>
         <span
           className={`block font-heading font-semibold leading-none ${
@@ -18,7 +18,7 @@ export function BrandMark({
         >
           The Black Rabbit
         </span>
-        <span className="catalog-label mt-1 block">Bookbar · Clermont</span>
+        <span className="eyebrow mt-1 block">Bookbar · Clermont</span>
       </span>
     </Link>
   );

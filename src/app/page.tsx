@@ -31,7 +31,7 @@ export default function Home() {
           <BrandMark />
         </div>
         <div className="max-w-4xl">
-          <p className="catalog-label mb-4">
+          <p className="eyebrow mb-4">
             Black Rabbit pilot · Powered by BrewLoop
           </p>
           <h1 className="text-balance text-5xl font-semibold leading-[0.95] tracking-tight sm:text-7xl">

@@ -3,7 +3,7 @@ import { MenuManager } from "@/components/menu-manager";
 export default function DashboardMenuPage() {
   return (
     <div>
-      <p className="catalog-label">The Black Rabbit · spellbook</p>
+      <p className="eyebrow">The Black Rabbit · spellbook</p>
       <h1 className="mt-2 text-5xl font-semibold tracking-tight">
         Menu management
       </h1>

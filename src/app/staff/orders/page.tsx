@@ -12,7 +12,7 @@ export default async function StaffOrdersPage() {
       <AppNav />
       <main className="px-6 py-8">
         <div className="mx-auto mb-6 max-w-[90rem]">
-          <p className="catalog-label">The Black Rabbit · 3 open · live</p>
+          <p className="eyebrow">The Black Rabbit · 3 open · live</p>
           <h1 className="mt-2 text-5xl font-semibold tracking-tight">
             Staff order board
           </h1>

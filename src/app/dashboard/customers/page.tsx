@@ -15,7 +15,7 @@ import { demoLoyaltyAccounts } from "@/lib/demo-data";
 export default function DashboardCustomersPage() {
   return (
     <div>
-      <p className="catalog-label">Customer relationships · no app required</p>
+      <p className="eyebrow">Customer relationships · no app required</p>
       <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
         <h1 className="text-5xl font-semibold tracking-tight">
           126 regulars & counting.
@@ -41,7 +41,7 @@ export default function DashboardCustomersPage() {
                 <TableRow key={customer.id}>
                   <TableCell>
                     <span className="flex items-center gap-3 font-heading text-xl">
-                      <span className="moon-mark size-8" aria-hidden="true" />
+                      <span className="moon-stamp moon-stamp--filled size-8" aria-hidden="true" />
                       {customer.name}
                     </span>
                   </TableCell>
