@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { AppNav } from "@/components/app-nav";
-import { getCafeBySlug } from "@/lib/demo-data";
+import { getCafeBySlug } from "@/lib/data";
 
 export default async function CafeLayout({
   children,
@@ -11,7 +11,7 @@ export default async function CafeLayout({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  if (!getCafeBySlug(slug)) notFound();
+  if (!(await getCafeBySlug(slug))) notFound();
 
   return (
     <>

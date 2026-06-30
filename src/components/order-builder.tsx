@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -27,13 +27,37 @@ import type {
 } from "@/lib/types";
 
 type Stage = "menu" | "checkout" | "confirmed";
+type SquareCard = {
+  attach(selector: string): Promise<void>;
+  tokenize(): Promise<{ status: string; token?: string; errors?: Array<{ message: string }> }>;
+};
+
+declare global {
+  interface Window {
+    Square?: {
+      payments(applicationId: string, locationId: string): Promise<{
+        card(): Promise<SquareCard>;
+      }>;
+    };
+  }
+}
 
 export function OrderBuilder({
   cafe,
   initialTable,
+  tableSignature = "",
+  demoMode,
+  square,
 }: {
   cafe: Cafe;
   initialTable?: string;
+  tableSignature?: string;
+  demoMode: boolean;
+  square: {
+    applicationId: string;
+    locationId: string;
+    environment: "sandbox" | "production";
+  };
 }) {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [orderType, setOrderType] = useState<OrderType>(
@@ -48,8 +72,13 @@ export function OrderBuilder({
   const [confirmation, setConfirmation] = useState<CafeOrder | null>(null);
   const [menuItems, setMenuItems] = useState(cafe.items);
   const [categories, setCategories] = useState<MenuCategory[]>(cafe.categories);
+  const [paymentError, setPaymentError] = useState("");
+  const [paying, setPaying] = useState(false);
+  const squareCard = useRef<SquareCard | null>(null);
+  const idempotencyKey = useRef(crypto.randomUUID());
 
   useEffect(() => {
+    if (!demoMode) return;
     const syncMenu = () => {
       setMenuItems(demoStore.getMenu());
       setCategories(demoStore.getCategories());
@@ -61,7 +90,39 @@ export function OrderBuilder({
       window.removeEventListener(STORE_EVENT, syncMenu);
       window.removeEventListener("storage", syncMenu);
     };
-  }, []);
+  }, [demoMode]);
+
+  useEffect(() => {
+    if (demoMode || stage !== "checkout" || squareCard.current) return;
+    if (!square.applicationId || !square.locationId) {
+      setPaymentError("Square is not configured.");
+      return;
+    }
+    const scriptUrl = square.environment === "production"
+      ? "https://web.squarecdn.com/v1/square.js"
+      : "https://sandbox.web.squarecdn.com/v1/square.js";
+    const setup = async () => {
+      if (!window.Square) return;
+      const payments = await window.Square.payments(
+        square.applicationId,
+        square.locationId,
+      );
+      squareCard.current = await payments.card();
+      await squareCard.current.attach("#square-card");
+    };
+    const existing = document.querySelector<HTMLScriptElement>(
+      `script[src="${scriptUrl}"]`,
+    );
+    if (existing) {
+      void setup().catch((error) => setPaymentError(String(error)));
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = scriptUrl;
+    script.onload = () => void setup().catch((error) => setPaymentError(String(error)));
+    script.onerror = () => setPaymentError("Square checkout failed to load.");
+    document.head.appendChild(script);
+  }, [demoMode, square, stage]);
 
   const orderItems = useMemo(
     () =>
@@ -82,6 +143,7 @@ export function OrderBuilder({
     orderItems.length > 0 &&
     customerName.trim() &&
     (orderType === "pickup" || tableNumber.trim());
+  const canUseTable = demoMode || Boolean(initialTable && tableSignature);
 
   function changeQuantity(itemId: string, change: number) {
     setQuantities((current) => ({
@@ -90,8 +152,67 @@ export function OrderBuilder({
     }));
   }
 
-  function submitOrder() {
+  async function submitOrder() {
     if (!canCheckout) return;
+
+    setPaymentError("");
+    setPaying(true);
+    if (!demoMode) {
+      try {
+        const tokenResult = await squareCard.current?.tokenize();
+        if (tokenResult?.status !== "OK" || !tokenResult.token) {
+          throw new Error(
+            tokenResult?.errors?.[0]?.message ?? "Enter valid card details.",
+          );
+        }
+        const response = await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            cafeId: cafe.id,
+            cafeSlug: cafe.slug,
+            idempotencyKey: idempotencyKey.current,
+            customerName,
+            customerPhone,
+            notes,
+            orderType,
+            tableNumber,
+            tableSignature,
+            tipCents: tip,
+            sourceId: tokenResult.token,
+            items: orderItems.map((item) => ({
+              menuItemId: item.menuItemId,
+              quantity: item.quantity,
+            })),
+          }),
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error ?? "Checkout failed.");
+        setConfirmation({
+          id: result.id,
+          cafeId: cafe.id,
+          customerName: result.customerName,
+          customerPhone,
+          status: "new",
+          orderType: result.orderType,
+          tableNumber: result.tableNumber ?? undefined,
+          notes,
+          subtotalCents: result.subtotalCents,
+          taxCents: result.taxCents,
+          tipCents: result.tipCents,
+          paymentStatus: "paid",
+          totalCents: result.totalCents,
+          items: result.items,
+          createdAt: new Date().toISOString(),
+        });
+        setStage("confirmed");
+      } catch (error) {
+        setPaymentError(error instanceof Error ? error.message : "Checkout failed.");
+      } finally {
+        setPaying(false);
+      }
+      return;
+    }
 
     const id = `BR-${Math.floor(1000 + Math.random() * 9000)}`;
     const order: CafeOrder = {
@@ -113,6 +234,7 @@ export function OrderBuilder({
     demoStore.setOrders([order, ...demoStore.getOrders()]);
     setConfirmation(order);
     setStage("confirmed");
+    setPaying(false);
   }
 
   if (stage === "confirmed" && confirmation) {
@@ -188,6 +310,12 @@ export function OrderBuilder({
                 <span>Tip</span>
                 <span>{formatCurrency(confirmation.tipCents ?? 0)}</span>
               </div>
+              {(confirmation.taxCents ?? 0) > 0 && (
+                <div className="flex justify-between">
+                  <span>Tax</span>
+                  <span>{formatCurrency(confirmation.taxCents ?? 0)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-base font-semibold">
                 <span>Total paid</span>
                 <span>{formatCurrency(confirmation.totalCents)}</span>
@@ -261,22 +389,46 @@ export function OrderBuilder({
             <CardTitle className="catalog-label">Card details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="space-y-2">
-              <Label htmlFor="card-number">Card number</Label>
-              <Input id="card-number" defaultValue="4242 4242 4242 4242" />
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              <Input aria-label="Expiration date" defaultValue="09 / 27" />
-              <Input aria-label="Security code" defaultValue="424" />
-              <Input aria-label="Postal code" defaultValue="34711" />
-            </div>
-            <Input aria-label="Name on card" placeholder="Name on card" />
+            {demoMode ? (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="card-number">Card number</Label>
+                  <Input id="card-number" defaultValue="4242 4242 4242 4242" />
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <Input aria-label="Expiration date" defaultValue="09 / 27" />
+                  <Input aria-label="Security code" defaultValue="424" />
+                  <Input aria-label="Postal code" defaultValue="34711" />
+                </div>
+                <Input aria-label="Name on card" placeholder="Name on card" />
+              </>
+            ) : (
+              <div id="square-card" className="min-h-24" />
+            )}
           </CardContent>
         </Card>
 
-        <Button className="mt-5 h-12 w-full" size="lg" onClick={submitOrder}>
-          <LockKeyhole /> Pay {formatCurrency(total)}
+        {paymentError && (
+          <p className="mt-4 text-sm text-destructive">{paymentError}</p>
+        )}
+        <Button
+          className="mt-5 h-12 w-full"
+          size="lg"
+          disabled={paying || (!demoMode && Boolean(paymentError))}
+          onClick={() => void submitOrder()}
+        >
+          <LockKeyhole />{" "}
+          {paying
+            ? "Processing…"
+            : demoMode
+              ? `Pay ${formatCurrency(total)}`
+              : "Pay securely"}
         </Button>
+        {!demoMode && (
+          <p className="powered-by mt-4 text-center">
+            Square calculates applicable tax before charging your card.
+          </p>
+        )}
         <p className="powered-by mt-4 text-center">
           Encrypted checkout · Powered by BrewLoop
         </p>
@@ -388,6 +540,7 @@ export function OrderBuilder({
               </Button>
               <Button
                 variant={orderType === "table" ? "default" : "outline"}
+                disabled={!canUseTable}
                 onClick={() => setOrderType("table")}
               >
                 Table

@@ -10,15 +10,63 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loyaltyProgress } from "@/lib/commerce";
 import { demoStore } from "@/lib/demo-store";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { Cafe } from "@/lib/types";
 
-export function RewardsPanel({ cafe }: { cafe: Cafe }) {
+export function RewardsPanel({
+  cafe,
+  demoMode,
+}: {
+  cafe: Cafe;
+  demoMode: boolean;
+}) {
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
+  const [code, setCode] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [error, setError] = useState("");
   const [visits, setVisits] = useState<number | null>(null);
 
-  function findOrJoin() {
+  async function findOrJoin() {
     if (!contact.trim()) return;
+    setError("");
+    if (!demoMode) {
+      const supabase = getSupabaseBrowserClient();
+      if (!supabase) {
+        setError("Supabase is not configured.");
+        return;
+      }
+      if (!otpSent) {
+        const { error: otpError } = await supabase.auth.signInWithOtp({
+          phone: contact.trim(),
+        });
+        if (otpError) setError(otpError.message);
+        else setOtpSent(true);
+        return;
+      }
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        phone: contact.trim(),
+        token: code.trim(),
+        type: "sms",
+      });
+      if (verifyError) {
+        setError(verifyError.message);
+        return;
+      }
+      const response = await fetch("/api/loyalty", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cafeId: cafe.id, name }),
+      });
+      const account = await response.json();
+      if (!response.ok) {
+        setError(account.error ?? "Unable to load rewards.");
+        return;
+      }
+      setName(account.name ?? name);
+      setVisits(account.visits);
+      return;
+    }
     const accounts = demoStore.getLoyalty();
     const normalized = contact.trim().toLowerCase();
     const existing = accounts.find(
@@ -89,9 +137,20 @@ export function RewardsPanel({ cafe }: { cafe: Cafe }) {
               id="reward-contact"
               value={contact}
               onChange={(event) => setContact(event.target.value)}
-              placeholder="(352) 555-0148"
+              placeholder={demoMode ? "(352) 555-0148" : "+1 352 555 0148"}
             />
           </div>
+          {!demoMode && otpSent && (
+            <div className="space-y-2">
+              <Label htmlFor="reward-code">Verification code</Label>
+              <Input
+                id="reward-code"
+                inputMode="numeric"
+                value={code}
+                onChange={(event) => setCode(event.target.value)}
+              />
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="reward-name">Name (optional)</Label>
             <Input
@@ -104,12 +163,13 @@ export function RewardsPanel({ cafe }: { cafe: Cafe }) {
           <p className="flex items-center gap-2 text-xs text-muted-foreground">
             <Check className="size-3.5" /> No app. No password. Just moons.
           </p>
+          {error && <p className="text-sm text-destructive">{error}</p>}
           <Button
             className="h-11 w-full"
-            disabled={!contact.trim()}
-            onClick={findOrJoin}
+            disabled={!contact.trim() || (!demoMode && otpSent && !code.trim())}
+            onClick={() => void findOrJoin()}
           >
-            Join / check rewards
+            {!demoMode && otpSent ? "Verify & check rewards" : "Join / check rewards"}
           </Button>
           <Button asChild variant="link" className="w-full text-muted-foreground">
             <Link href={`/cafe/${cafe.slug}/order`}>
