@@ -16,7 +16,7 @@ export default async function RewardsPage({
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
       <div className="mb-10 max-w-2xl">
-        <p className="catalog-label">Coven card · loyalty</p>
+        <p className="eyebrow">Coven card · loyalty</p>
         <h1 className="mt-2 text-5xl font-semibold tracking-tight">
           Collect 10 moons.
         </h1>

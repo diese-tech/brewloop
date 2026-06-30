@@ -15,14 +15,14 @@ const metrics = [
 export default function DashboardRewardsPage() {
   return (
     <div>
-      <p className="catalog-label">Loyalty program · active</p>
+      <p className="eyebrow">Loyalty program · active</p>
       <h1 className="mt-2 text-5xl font-semibold tracking-tight">Rewards</h1>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {metrics.map(([label, value]) => (
           <Card key={label}>
             <CardHeader>
-              <CardTitle className="catalog-label">{label}</CardTitle>
+              <CardTitle className="eyebrow">{label}</CardTitle>
             </CardHeader>
             <CardContent className="font-heading text-5xl font-semibold">
               {value}
@@ -43,7 +43,7 @@ export default function DashboardRewardsPage() {
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               {Array.from({ length: 10 }).map((_, index) => (
-                <span key={index} className="moon-stamp" />
+                <span key={index} className="moon-stamp moon-stamp--filled" />
               ))}
               <Badge className="ml-2 self-center">→ 1 free drink</Badge>
             </div>
@@ -64,7 +64,7 @@ export default function DashboardRewardsPage() {
           </Card>
           <Card className="border-dashed bg-transparent shadow-none">
             <CardContent className="pt-5 text-sm text-muted-foreground">
-              <p className="catalog-label mb-3">Coming in v1.5</p>
+              <p className="eyebrow mb-3">Coming in v1.5</p>
               Points-per-order · configurable thresholds · manual visit
               adjustment
             </CardContent>

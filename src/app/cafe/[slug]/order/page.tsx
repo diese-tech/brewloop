@@ -19,7 +19,7 @@ export default async function OrderPage({
   return (
     <main className="mx-auto max-w-6xl px-5 py-8 sm:px-6 sm:py-10">
       <div className="mb-10">
-        <p className="catalog-label">
+        <p className="eyebrow">
           {t ? `Table ${t}` : "Pickup or table service"}
         </p>
         <h1 className="mt-2 text-5xl font-semibold tracking-tight">

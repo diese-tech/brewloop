@@ -97,7 +97,7 @@ export function RewardsPanel({
 
   return (
     <div className="grid gap-6 md:grid-cols-[1.05fr_0.95fr]">
-      <Card className="parchment-card">
+      <Card className="card card--parchment">
         <CardHeader>
           <span className="font-mono text-[0.58rem] uppercase tracking-[0.2em] text-[var(--ink-muted)]">
             Your moon card
@@ -112,9 +112,9 @@ export function RewardsPanel({
           <div className="grid grid-cols-5 gap-4">
             {Array.from({ length: 10 }).map((_, index) =>
               index < current ? (
-                <span key={index} className="moon-stamp" />
+                <span key={index} className="moon-stamp moon-stamp--filled" />
               ) : (
-                <span key={index} className="moon-stamp-empty" />
+                <span key={index} className="moon-stamp moon-stamp--empty" />
               ),
             )}
           </div>

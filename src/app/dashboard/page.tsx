@@ -28,7 +28,7 @@ const hours = [32, 48, 64, 42, 78, 92, 70, 51];
 export default function DashboardPage() {
   return (
     <div>
-      <p className="catalog-label">The Black Rabbit · owner portal</p>
+      <p className="eyebrow">The Black Rabbit · owner portal</p>
       <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-5xl font-semibold tracking-tight">
@@ -48,7 +48,7 @@ export default function DashboardPage() {
         {metrics.map(({ label, value, icon: Icon }) => (
           <Card key={label}>
             <CardHeader className="flex-row items-center justify-between">
-              <CardTitle className="catalog-label">{label}</CardTitle>
+              <CardTitle className="eyebrow">{label}</CardTitle>
               <Icon className="size-4 text-[var(--brass-bright)]" />
             </CardHeader>
             <CardContent className="font-heading text-5xl font-semibold">
@@ -117,7 +117,7 @@ export default function DashboardPage() {
               className="flex items-center justify-between rounded-xl border border-border p-4"
             >
               <span className="font-heading text-lg">{customer.name}</span>
-              <span className="catalog-label">{customer.visits} moons</span>
+              <span className="eyebrow">{customer.visits} moons</span>
             </div>
           ))}
         </CardContent>

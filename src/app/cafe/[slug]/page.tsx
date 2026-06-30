@@ -30,7 +30,7 @@ export default async function CafePage({
             <Badge className="mb-6 bg-background/35" variant="outline">
               {cafe.hours}
             </Badge>
-            <p className="catalog-label mb-4">The Black Rabbit Bookbar</p>
+            <p className="eyebrow mb-4">The Black Rabbit Bookbar</p>
             <h1 className="max-w-3xl text-6xl font-semibold leading-[0.88] tracking-tight sm:text-8xl">
               Enter the rabbit hole.
             </h1>
@@ -41,7 +41,7 @@ export default async function CafePage({
               <MapPin className="size-4" /> {cafe.address}
             </p>
           </div>
-          <Card className="parchment-card">
+          <Card className="card card--parchment">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <span className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-[var(--ink-muted)]">
@@ -59,9 +59,9 @@ export default async function CafePage({
               <div className="flex flex-wrap gap-2" aria-label="7 of 10 visits">
                 {Array.from({ length: 10 }).map((_, index) =>
                   index < 7 ? (
-                    <span key={index} className="moon-stamp" />
+                    <span key={index} className="moon-stamp moon-stamp--filled" />
                   ) : (
-                    <span key={index} className="moon-stamp-empty" />
+                    <span key={index} className="moon-stamp moon-stamp--empty" />
                   ),
                 )}
               </div>
@@ -94,14 +94,14 @@ export default async function CafePage({
       <section className="mx-auto max-w-6xl px-6 py-14">
         <div className="flex items-end justify-between gap-6">
           <div>
-            <p className="catalog-label">From the spellbook</p>
+            <p className="eyebrow">From the spellbook</p>
             <h2 className="mt-2 text-4xl font-semibold">Signature potions</h2>
           </div>
-          <span className="catalog-label">{cafe.items.length} featured</span>
+          <span className="eyebrow">{cafe.items.length} featured</span>
         </div>
         <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {cafe.items.slice(0, 6).map((item) => (
-            <Card key={item.id} className="parchment-card min-h-48">
+            <Card key={item.id} className="card card--parchment min-h-48">
               <CardHeader>
                 <span className="font-mono text-[0.55rem] uppercase tracking-[0.2em] text-[var(--ink-muted)]">
                   Tincture
@@ -138,7 +138,7 @@ export default async function CafePage({
             <ArrowRight />
           </Button>
         </div>
-        <p className="powered-by mt-14 border-t border-border pt-7 text-center">
+        <p className="site-credit mt-14 border-t border-border pt-7 text-center">
           Powered by BrewLoop by ThreeTails
         </p>
       </section>

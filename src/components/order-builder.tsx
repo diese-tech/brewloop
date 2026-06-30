@@ -245,13 +245,13 @@ export function OrderBuilder({
             <Check className="size-6" />
           </span>
         </div>
-        <p className="catalog-label mt-7">Order received</p>
+        <p className="eyebrow mt-7">Order received</p>
         <h2 className="mt-2 text-5xl font-semibold">You’re in the queue.</h2>
         <p className="mt-2 font-heading text-xl italic text-muted-foreground">
           We’ll call your name at the bar.
         </p>
 
-        <Card className="parchment-card mt-8 text-left">
+        <Card className="card card--parchment mt-8 text-left">
           <CardHeader>
             <div className="flex items-start justify-between">
               <div>
@@ -323,7 +323,7 @@ export function OrderBuilder({
             </div>
           </CardContent>
         </Card>
-        <p className="catalog-label mt-5">Est. 8–10 min · Paid · Visa ••42</p>
+        <p className="eyebrow mt-5">Est. 8–10 min · Paid · Visa ••42</p>
         <div className="mt-7 grid gap-3 sm:grid-cols-2">
           <Button asChild size="lg">
             <Link href={`/cafe/${cafe.slug}/rewards`}>Check your rewards</Link>
@@ -342,7 +342,7 @@ export function OrderBuilder({
         <Button variant="ghost" onClick={() => setStage("menu")}>
           <ArrowLeft /> Back to menu
         </Button>
-        <p className="catalog-label mt-7">Secure checkout</p>
+        <p className="eyebrow mt-7">Secure checkout</p>
         <h2 className="mt-2 text-5xl font-semibold">Pay for your order.</h2>
 
         <Card className="mt-7">
@@ -369,7 +369,7 @@ export function OrderBuilder({
 
         <Card className="mt-4">
           <CardHeader>
-            <CardTitle className="catalog-label">Add a tip for the bar</CardTitle>
+            <CardTitle className="eyebrow">Add a tip for the bar</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-4 gap-2">
             {[0, 15, 18, 20].map((percent) => (
@@ -386,7 +386,7 @@ export function OrderBuilder({
 
         <Card className="mt-4">
           <CardHeader>
-            <CardTitle className="catalog-label">Card details</CardTitle>
+            <CardTitle className="eyebrow">Card details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {demoMode ? (
@@ -425,11 +425,11 @@ export function OrderBuilder({
               : "Pay securely"}
         </Button>
         {!demoMode && (
-          <p className="powered-by mt-4 text-center">
+          <p className="site-credit mt-4 text-center">
             Square calculates applicable tax before charging your card.
           </p>
         )}
-        <p className="powered-by mt-4 text-center">
+        <p className="site-credit mt-4 text-center">
           Encrypted checkout · Powered by BrewLoop
         </p>
       </div>
@@ -450,11 +450,11 @@ export function OrderBuilder({
               <section key={category.id}>
                 <div className="mb-4 flex items-end justify-between">
                   <h2 className="text-3xl font-semibold">{category.name}</h2>
-                  <span className="catalog-label">{items.length} selections</span>
+                  <span className="eyebrow">{items.length} selections</span>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {items.map((item) => (
-                    <Card key={item.id} className="spine-card bg-card/90">
+                    <Card key={item.id} className="card card--spine bg-card/90">
                       <CardHeader>
                         <div className="flex items-start justify-between gap-4">
                           <CardTitle className="text-2xl">{item.name}</CardTitle>

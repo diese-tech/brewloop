@@ -116,12 +116,58 @@
   }
 }
 
+/*
+ * App-specific BEM blocks/elements/modifiers. See docs/BEM_STANDARDS.md for
+ * naming convention, when to add a class here vs. use Tailwind utilities,
+ * and usage examples.
+ */
 @layer components {
-  .catalog-label {
+  /* Block: eyebrow — small uppercase mono kicker/label text. */
+  .eyebrow {
     @apply font-mono text-[0.65rem] uppercase tracking-[0.22em] text-muted-foreground;
   }
 
-  .parchment-card {
+  /* Block: site-credit — small footer attribution text. */
+  .site-credit {
+    @apply font-mono text-[0.58rem] uppercase tracking-[0.2em] text-muted-foreground;
+  }
+
+  /* Block: moon-stamp — one dot in the 10-stamp loyalty row. */
+  .moon-stamp {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+  }
+
+  .moon-stamp--filled {
+    background:
+      radial-gradient(circle at 66% 36%, var(--background) 0 42%, transparent 43%),
+      var(--brass-bright);
+  }
+
+  .moon-stamp--empty {
+    border: 1px dashed var(--ink-muted);
+  }
+
+  /* Block: brand-mark — the Black Rabbit logo lockup. */
+  .brand-mark__moon {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    border: 1px solid var(--brass);
+    box-shadow: 0 0 0 4px rgb(169 130 98 / 10%);
+    background:
+      radial-gradient(circle at 66% 36%, var(--background) 0 42%, transparent 43%),
+      var(--brass-bright);
+  }
+
+  /*
+   * Modifiers applied directly to shadcn's <Card data-slot="card">, which
+   * already carries the block identity (see docs/BEM_STANDARDS.md).
+   */
+  .card--parchment {
     position: relative;
     color: var(--ink) !important;
     background: var(--parchment) !important;
@@ -132,41 +178,13 @@
       0 18px 45px rgb(0 0 0 / 28%);
   }
 
-  .moon-mark,
-  .moon-stamp {
-    display: inline-block;
-    border-radius: 999px;
-    background:
-      radial-gradient(circle at 66% 36%, var(--background) 0 42%, transparent 43%),
-      var(--brass-bright);
-  }
-
-  .moon-mark {
-    width: 2rem;
-    height: 2rem;
-    border: 1px solid var(--brass);
-    box-shadow: 0 0 0 4px rgb(169 130 98 / 10%);
-  }
-
-  .moon-stamp {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  .moon-stamp-empty {
-    width: 2rem;
-    height: 2rem;
-    border: 1px dashed var(--ink-muted);
-    border-radius: 999px;
-  }
-
-  .spine-card {
+  .card--spine {
     position: relative;
     overflow: hidden;
   }
 
-  .spine-card::before,
-  .spine-card::after {
+  .card--spine::before,
+  .card--spine::after {
     content: "";
     position: absolute;
     inset-block: 0.75rem;
@@ -175,12 +193,32 @@
     background: var(--brass);
   }
 
-  .spine-card::after {
+  .card--spine::after {
     left: 4px;
     opacity: 0.45;
   }
 
-  .powered-by {
-    @apply font-mono text-[0.58rem] uppercase tracking-[0.2em] text-muted-foreground;
+  /* Block: status-dot — staff order board column status indicator. */
+  .status-dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+  }
+
+  .status-dot--new {
+    background: var(--warning);
+  }
+
+  .status-dot--making {
+    background: var(--primary);
+  }
+
+  .status-dot--ready {
+    background: var(--success);
+  }
+
+  .status-dot--completed {
+    background: var(--muted-foreground);
   }
 }
