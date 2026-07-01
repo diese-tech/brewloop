@@ -38,6 +38,8 @@ const PAYMENT_LABEL: Record<
   unpaid: "unpaid",
 };
 
+const OPEN_STATUSES = new Set<OrderStatus>(["new", "making", "ready"]);
+
 function isProblemOrder(order: CafeOrder) {
   return (
     order.status === "cancelled" ||
@@ -84,7 +86,10 @@ export function StaffBoard({
     const sync = async () => {
       try {
         const response = await fetch("/api/staff/orders");
-        if (response.ok) setOrders((await response.json()).orders);
+        if (response.ok) {
+          setOrders((await response.json()).orders);
+          setConnected(true);
+        }
       } catch {
         setConnected(false);
       }
@@ -122,8 +127,13 @@ export function StaffBoard({
     if (!response.ok) setOrders(orders);
   }
 
+  const openCount = orders.filter(
+    (order) => OPEN_STATUSES.has(order.status) && !isProblemOrder(order),
+  ).length;
+
   return (
     <div>
+      <p className="eyebrow mb-4">{openCount} open now</p>
       {!demoMode && !connected && (
         <p className="mb-4 flex items-center gap-2 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
           <WifiOff className="size-4 shrink-0" />
