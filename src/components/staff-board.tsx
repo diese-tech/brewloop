@@ -6,7 +6,7 @@ import { Clock3, WifiOff } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatCurrency } from "@/lib/commerce";
+import { formatCurrency, isProblemOrder } from "@/lib/commerce";
 import { demoStore, STORE_EVENT } from "@/lib/demo-store";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { CafeOrder, OrderStatus } from "@/lib/types";
@@ -39,14 +39,6 @@ const PAYMENT_LABEL: Record<
 };
 
 const OPEN_STATUSES = new Set<OrderStatus>(["new", "making", "ready"]);
-
-function isProblemOrder(order: CafeOrder) {
-  return (
-    order.status === "cancelled" ||
-    order.paymentStatus === "failed" ||
-    order.paymentStatus === "refunded"
-  );
-}
 
 function ageMinutes(createdAt: string, now: number) {
   return Math.max(0, Math.floor((now - new Date(createdAt).getTime()) / 60_000));

@@ -3,8 +3,27 @@ import { describe, expect, it } from "vitest";
 import {
   calculateOrderTotal,
   dollarsToCents,
+  isProblemOrder,
   loyaltyProgress,
 } from "@/lib/commerce";
+import type { CafeOrder } from "@/lib/types";
+
+function baseOrder(overrides: Partial<CafeOrder> = {}): CafeOrder {
+  return {
+    id: "BR-1",
+    cafeId: "cafe-1",
+    customerName: "Test",
+    customerPhone: "",
+    status: "new",
+    orderType: "pickup",
+    notes: "",
+    paymentStatus: "paid",
+    totalCents: 500,
+    items: [],
+    createdAt: new Date().toISOString(),
+    ...overrides,
+  };
+}
 
 describe("commerce helpers", () => {
   it("calculates totals from snapshotted unit prices", () => {
@@ -37,5 +56,12 @@ describe("commerce helpers", () => {
       threshold: 10,
       rewardsEarned: 1,
     });
+  });
+
+  it("treats cancelled, failed, and refunded orders as problems", () => {
+    expect(isProblemOrder(baseOrder({ status: "cancelled" }))).toBe(true);
+    expect(isProblemOrder(baseOrder({ paymentStatus: "failed" }))).toBe(true);
+    expect(isProblemOrder(baseOrder({ paymentStatus: "refunded" }))).toBe(true);
+    expect(isProblemOrder(baseOrder())).toBe(false);
   });
 });
