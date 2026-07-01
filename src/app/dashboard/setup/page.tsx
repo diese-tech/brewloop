@@ -51,6 +51,7 @@ export default async function SetupPage() {
     hours: string | null;
     logoUrl: string | null;
     acceptingOrders: boolean;
+    squareLocationId: string | null;
   };
   let staffCount: number | null = null;
   let categoryCount = 0;
@@ -64,6 +65,7 @@ export default async function SetupPage() {
       hours: demoCafe.hours ?? null,
       logoUrl: null,
       acceptingOrders: demoCafe.acceptingOrders,
+      squareLocationId: demoCafe.squareLocationId ?? null,
     };
     staffCount = 1;
     categoryCount = demoCafe.categories.length;
@@ -73,7 +75,9 @@ export default async function SetupPage() {
     if (!supabase) throw new Error("Supabase is not configured.");
     const { data: cafe } = await supabase
       .from("cafes")
-      .select("name, tagline, address, hours, logo_url, accepting_orders")
+      .select(
+        "name, tagline, address, hours, logo_url, accepting_orders, square_location_id",
+      )
       .eq("id", member.cafeId)
       .single();
     cafeProfile = {
@@ -83,6 +87,7 @@ export default async function SetupPage() {
       hours: cafe?.hours ?? null,
       logoUrl: cafe?.logo_url ?? null,
       acceptingOrders: cafe?.accepting_orders ?? true,
+      squareLocationId: cafe?.square_location_id ?? null,
     };
     if (member.role === "owner") {
       const { count } = await supabase
@@ -256,7 +261,13 @@ export default async function SetupPage() {
               <StatusBadge ok={demoMode || readiness.square.applicationId} />
             </Row>
             <Row label="Location ID">
-              <StatusBadge ok={demoMode || readiness.square.locationId} />
+              <StatusBadge
+                ok={
+                  demoMode ||
+                  readiness.square.locationId ||
+                  Boolean(cafeProfile.squareLocationId)
+                }
+              />
             </Row>
             <Row label="Access token">
               <StatusBadge ok={demoMode || readiness.square.accessToken} />
