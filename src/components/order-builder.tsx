@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   ArrowLeft,
   Check,
+  CircleAlert,
   LockKeyhole,
   Minus,
   Plus,
@@ -20,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { calculateOrderTotal, formatCurrency } from "@/lib/commerce";
 import { demoStore, STORE_EVENT } from "@/lib/demo-store";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import type {
   Cafe,
   CafeOrder,
@@ -71,10 +73,19 @@ export function OrderBuilder({
   const [stage, setStage] = useState<Stage>("menu");
   const [tipPercent, setTipPercent] = useState(18);
   const [confirmation, setConfirmation] = useState<CafeOrder | null>(null);
+  const [paymentCard, setPaymentCard] = useState<
+    { brand?: string; last4?: string } | null
+  >(null);
   const [menuItems, setMenuItems] = useState(cafe.items);
   const [categories, setCategories] = useState<MenuCategory[]>(cafe.categories);
   const [paymentError, setPaymentError] = useState("");
   const [paying, setPaying] = useState(false);
+  const [loyaltyPhone, setLoyaltyPhone] = useState("");
+  const [loyaltyCode, setLoyaltyCode] = useState("");
+  const [loyaltyOtpSent, setLoyaltyOtpSent] = useState(false);
+  const [loyaltySignedIn, setLoyaltySignedIn] = useState(false);
+  const [loyaltyError, setLoyaltyError] = useState("");
+  const [loyaltyBusy, setLoyaltyBusy] = useState(false);
   const squareCard = useRef<SquareCard | null>(null);
   const idempotencyKey = useRef(crypto.randomUUID());
 
@@ -92,6 +103,15 @@ export function OrderBuilder({
       window.removeEventListener("storage", syncMenu);
     };
   }, [demoMode]);
+
+  useEffect(() => {
+    if (demoMode || stage !== "checkout") return;
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user?.phone) setLoyaltySignedIn(true);
+    });
+  }, [demoMode, stage]);
 
   useEffect(() => {
     if (demoMode || stage !== "checkout" || squareCard.current) return;
@@ -158,6 +178,48 @@ export function OrderBuilder({
     setQuantities((current) => ({ ...current, [itemId]: 0 }));
   }
 
+  async function sendLoyaltyOtp() {
+    if (!loyaltyPhone.trim()) return;
+    setLoyaltyError("");
+    setLoyaltyBusy(true);
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) {
+      setLoyaltyError("Rewards aren't configured right now.");
+      setLoyaltyBusy(false);
+      return;
+    }
+    const { error } = await supabase.auth.signInWithOtp({
+      phone: loyaltyPhone.trim(),
+    });
+    setLoyaltyBusy(false);
+    if (error) setLoyaltyError(error.message);
+    else setLoyaltyOtpSent(true);
+  }
+
+  async function verifyLoyaltyOtp() {
+    if (!loyaltyCode.trim()) return;
+    setLoyaltyError("");
+    setLoyaltyBusy(true);
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) {
+      setLoyaltyError("Rewards aren't configured right now.");
+      setLoyaltyBusy(false);
+      return;
+    }
+    const { error } = await supabase.auth.verifyOtp({
+      phone: loyaltyPhone.trim(),
+      token: loyaltyCode.trim(),
+      type: "sms",
+    });
+    setLoyaltyBusy(false);
+    if (error) {
+      setLoyaltyError(error.message);
+      return;
+    }
+    setLoyaltyOtpSent(false);
+    setLoyaltySignedIn(true);
+  }
+
   async function submitOrder() {
     if (!canCheckout) return;
 
@@ -211,6 +273,11 @@ export function OrderBuilder({
           items: result.items,
           createdAt: new Date().toISOString(),
         });
+        setPaymentCard(
+          result.cardBrand || result.cardLast4
+            ? { brand: result.cardBrand, last4: result.cardLast4 }
+            : null,
+        );
         setStage("confirmed");
       } catch (error) {
         setPaymentError(error instanceof Error ? error.message : "Checkout failed.");
@@ -238,7 +305,33 @@ export function OrderBuilder({
       createdAt: new Date().toISOString(),
     };
     demoStore.setOrders([order, ...demoStore.getOrders()]);
+    if (loyaltyPhone.trim()) {
+      const normalizedPhone = loyaltyPhone.trim();
+      const accounts = demoStore.getLoyalty();
+      const existing = accounts.find((account) => account.phone === normalizedPhone);
+      demoStore.setLoyalty(
+        existing
+          ? accounts.map((account) =>
+              account.id === existing.id
+                ? { ...account, visits: account.visits + 1, points: account.points + 10 }
+                : account,
+            )
+          : [
+              {
+                id: crypto.randomUUID(),
+                cafeId: cafe.id,
+                name: customerName.trim() || "Bookbar regular",
+                email: "",
+                phone: normalizedPhone,
+                visits: 1,
+                points: 10,
+              },
+              ...accounts,
+            ],
+      );
+    }
     setConfirmation(order);
+    setPaymentCard({ brand: "Visa", last4: "4242" });
     setStage("confirmed");
     setPaying(false);
   }
@@ -329,15 +422,24 @@ export function OrderBuilder({
             </div>
           </CardContent>
         </Card>
-        <p className="eyebrow mt-5">Est. 8–10 min · Paid · Visa ••42</p>
+        <p className="eyebrow mt-5">
+          Est. 8–10 min · Paid
+          {paymentCard?.last4 &&
+            ` · ${paymentCard.brand ?? "Card"} ending in ${paymentCard.last4}`}
+        </p>
         <div className="mt-7 grid gap-3 sm:grid-cols-2">
           <Button asChild size="lg">
-            <Link href={`/cafe/${cafe.slug}/rewards`}>Check your rewards</Link>
+            <Link href={`/cafe/${cafe.slug}/order/${confirmation.id}`}>
+              Track your order
+            </Link>
           </Button>
           <Button asChild size="lg" variant="outline">
-            <Link href={`/cafe/${cafe.slug}`}>Back to the bookbar</Link>
+            <Link href={`/cafe/${cafe.slug}/rewards`}>Check your rewards</Link>
           </Button>
         </div>
+        <Button asChild size="lg" variant="ghost" className="mt-3 w-full">
+          <Link href={`/cafe/${cafe.slug}`}>Back to the bookbar</Link>
+        </Button>
       </div>
     );
   }
@@ -370,6 +472,82 @@ export function OrderBuilder({
               <span>Subtotal</span>
               <span className="font-mono">{formatCurrency(subtotal)}</span>
             </div>
+          </CardContent>
+        </Card>
+
+        <Card className="mt-4">
+          <CardHeader>
+            <CardTitle className="eyebrow">Loyalty (optional)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Add this order to your moon card. Skip it — checkout works
+              either way.
+            </p>
+            {demoMode ? (
+              <div className="space-y-2">
+                <Label htmlFor="loyalty-phone">Phone for rewards</Label>
+                <Input
+                  id="loyalty-phone"
+                  value={loyaltyPhone}
+                  onChange={(event) => setLoyaltyPhone(event.target.value)}
+                  placeholder="(352) 555-0148"
+                />
+              </div>
+            ) : loyaltySignedIn ? (
+              <p className="flex items-center gap-2 text-sm text-[var(--success)]">
+                <Check className="size-3.5" /> Signed in — this order will
+                count toward your rewards.
+              </p>
+            ) : loyaltyOtpSent ? (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="loyalty-code">Verification code</Label>
+                  <Input
+                    id="loyalty-code"
+                    inputMode="numeric"
+                    value={loyaltyCode}
+                    onChange={(event) => setLoyaltyCode(event.target.value)}
+                  />
+                </div>
+                {loyaltyError && (
+                  <p className="text-sm text-destructive">{loyaltyError}</p>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  disabled={!loyaltyCode.trim() || loyaltyBusy}
+                  onClick={() => void verifyLoyaltyOtp()}
+                >
+                  {loyaltyBusy ? "Verifying…" : "Verify & earn rewards"}
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="loyalty-phone">Phone for rewards</Label>
+                  <Input
+                    id="loyalty-phone"
+                    value={loyaltyPhone}
+                    onChange={(event) => setLoyaltyPhone(event.target.value)}
+                    placeholder="+1 352 555 0148"
+                  />
+                </div>
+                {loyaltyError && (
+                  <p className="text-sm text-destructive">{loyaltyError}</p>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  disabled={!loyaltyPhone.trim() || loyaltyBusy}
+                  onClick={() => void sendLoyaltyOtp()}
+                >
+                  {loyaltyBusy ? "Sending…" : "Text me a code to earn rewards"}
+                </Button>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -415,7 +593,13 @@ export function OrderBuilder({
         </Card>
 
         {paymentError && (
-          <p className="mt-4 text-sm text-destructive">{paymentError}</p>
+          <p className="mt-4 flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+            <CircleAlert className="mt-0.5 size-4 shrink-0" />
+            <span>
+              <span className="font-semibold">Payment didn&apos;t go through.</span>{" "}
+              {paymentError}
+            </span>
+          </p>
         )}
         <Button
           className="mt-5 h-12 w-full"

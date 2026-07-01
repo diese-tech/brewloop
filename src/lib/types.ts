@@ -13,7 +13,12 @@ export type MenuItem = {
   isActive: boolean;
 };
 
-export type OrderStatus = "new" | "making" | "ready" | "completed";
+export type OrderStatus =
+  | "new"
+  | "making"
+  | "ready"
+  | "completed"
+  | "cancelled";
 export type OrderType = "pickup" | "table";
 
 export type OrderItem = {

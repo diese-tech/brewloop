@@ -221,4 +221,8 @@
   .status-dot--completed {
     background: var(--muted-foreground);
   }
+
+  .status-dot--cancelled {
+    background: var(--destructive);
+  }
 }
