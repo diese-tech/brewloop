@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { parseOrRespond } from "@/lib/api-validation";
 import { isDemoMode } from "@/lib/config";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
@@ -20,6 +21,21 @@ async function membership() {
     .limit(1)
     .maybeSingle();
   return data ? { client, cafeId: data.cafe_id } : null;
+}
+
+async function categoryBelongsToCafe(
+  client: Awaited<ReturnType<typeof getSupabaseServerClient>>,
+  categoryId: string,
+  cafeId: string,
+) {
+  if (!client) return false;
+  const { data } = await client
+    .from("menu_categories")
+    .select("id")
+    .eq("id", categoryId)
+    .eq("cafe_id", cafeId)
+    .maybeSingle();
+  return Boolean(data);
 }
 
 const createSchema = z.object({
@@ -44,7 +60,14 @@ export async function POST(request: Request) {
   }
   const member = await membership();
   if (!member) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const input = createSchema.parse(await request.json());
+  const parsed = parseOrRespond(createSchema, await request.json());
+  if (parsed.response) return parsed.response;
+  const input = parsed.data;
+
+  if (!(await categoryBelongsToCafe(member.client, input.categoryId, member.cafeId))) {
+    return NextResponse.json({ error: "Category not found for this cafe." }, { status: 400 });
+  }
+
   const { data, error } = await member.client
     .from("menu_items")
     .insert({
@@ -73,8 +96,17 @@ export async function PATCH(request: Request) {
   }
   const member = await membership();
   if (!member) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const input = updateSchema.parse(await request.json());
-  const { id, ...fields } = input;
+  const parsed = parseOrRespond(updateSchema, await request.json());
+  if (parsed.response) return parsed.response;
+  const { id, ...fields } = parsed.data;
+
+  if (
+    fields.categoryId !== undefined &&
+    !(await categoryBelongsToCafe(member.client, fields.categoryId, member.cafeId))
+  ) {
+    return NextResponse.json({ error: "Category not found for this cafe." }, { status: 400 });
+  }
+
   const update: MenuItemUpdate = {};
   if (fields.categoryId !== undefined) update.category_id = fields.categoryId;
   if (fields.name !== undefined) update.name = fields.name;

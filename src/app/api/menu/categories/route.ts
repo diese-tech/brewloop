@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { parseOrRespond } from "@/lib/api-validation";
 import { isDemoMode } from "@/lib/config";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -35,7 +36,9 @@ export async function POST(request: Request) {
   }
   const member = await membership();
   if (!member) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const input = createSchema.parse(await request.json());
+  const parsed = parseOrRespond(createSchema, await request.json());
+  if (parsed.response) return parsed.response;
+  const input = parsed.data;
   const { data, error } = await member.client
     .from("menu_categories")
     .insert({ cafe_id: member.cafeId, name: input.name, sort_order: input.sortOrder })
@@ -55,7 +58,9 @@ export async function PATCH(request: Request) {
   }
   const member = await membership();
   if (!member) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const input = renameSchema.parse(await request.json());
+  const parsed = parseOrRespond(renameSchema, await request.json());
+  if (parsed.response) return parsed.response;
+  const input = parsed.data;
   const { error } = await member.client
     .from("menu_categories")
     .update({ name: input.name })
