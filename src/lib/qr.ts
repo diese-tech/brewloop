@@ -1,6 +1,11 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-const DEFAULT_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
+// Table links are meant to be printed once and left on physical table tents
+// for months, so this needs to be long-lived rather than a short session
+// window. Revoking a specific table's access is handled by deactivating it
+// in the tables registry (see /api/orders), not by letting the signature
+// itself expire quickly.
+const DEFAULT_TTL_MS = 180 * 24 * 60 * 60 * 1000; // ~180 days
 const CLOCK_SKEW_TOLERANCE_MS = 60_000;
 
 function digest(slug: string, table: string, issuedAt: number, secret: string) {

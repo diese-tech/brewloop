@@ -14,7 +14,7 @@ describe("table QR signatures", () => {
   });
 
   it("rejects a signature once it has expired", () => {
-    const issuedAt = Date.now() - 13 * 60 * 60 * 1000; // 13h ago, past the 12h default TTL
+    const issuedAt = Date.now() - 181 * 24 * 60 * 60 * 1000; // 181 days ago, past the ~180 day default TTL
     const signature = signTable("black-rabbit", "12", "x".repeat(32), issuedAt);
     expect(
       verifyTableSignature("black-rabbit", "12", signature, "x".repeat(32)),

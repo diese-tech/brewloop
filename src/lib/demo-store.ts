@@ -1,11 +1,19 @@
 "use client";
 
-import { demoCafe, demoLoyaltyAccounts, demoOrders } from "@/lib/demo-data";
+import {
+  demoCafe,
+  demoLoyaltyAccounts,
+  demoOrders,
+  demoStaff,
+  demoTables,
+} from "@/lib/demo-data";
 import type {
   CafeOrder,
+  CafeTable,
   LoyaltyAccount,
   MenuCategory,
   MenuItem,
+  StaffMember,
 } from "@/lib/types";
 
 const KEYS = {
@@ -13,6 +21,8 @@ const KEYS = {
   loyalty: "brewloop-demo-loyalty",
   categories: "brewloop-demo-categories",
   menu: "brewloop-demo-menu",
+  tables: "brewloop-demo-tables",
+  staff: "brewloop-demo-staff",
 };
 
 export const STORE_EVENT = "brewloop-store-change";
@@ -45,4 +55,8 @@ export const demoStore = {
     write(KEYS.categories, categories),
   getMenu: () => read<MenuItem[]>(KEYS.menu, demoCafe.items),
   setMenu: (items: MenuItem[]) => write(KEYS.menu, items),
+  getTables: () => read<CafeTable[]>(KEYS.tables, demoTables),
+  setTables: (tables: CafeTable[]) => write(KEYS.tables, tables),
+  getStaff: () => read<StaffMember[]>(KEYS.staff, demoStaff),
+  setStaff: (staff: StaffMember[]) => write(KEYS.staff, staff),
 };

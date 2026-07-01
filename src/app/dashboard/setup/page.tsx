@@ -1,7 +1,9 @@
 import { CircleAlert } from "lucide-react";
+import Link from "next/link";
 
 import { AcceptingOrdersToggle } from "@/components/accepting-orders-toggle";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireCafeMember } from "@/lib/auth";
 import { getProductionReadiness, isDemoMode } from "@/lib/config";
@@ -217,11 +219,12 @@ export default async function SetupPage() {
               <StatusBadge ok={demoMode || readiness.qrSigningSecret} />
             </Row>
             <p className="mt-4 text-xs text-muted-foreground">
-              Signed table links are generated per-table by staff/owners via
-              the QR signing API once a secret is configured. A dedicated
-              table/QR management screen is coming in a follow-up pilot
-              issue.
+              Add tables and generate/copy signed order links from the
+              tables screen.
             </p>
+            <Button asChild variant="outline" size="sm" className="mt-3">
+              <Link href="/dashboard/tables">Manage tables &amp; QRs</Link>
+            </Button>
           </CardContent>
         </Card>
 
@@ -232,7 +235,7 @@ export default async function SetupPage() {
           <CardContent>
             {staffCount === null ? (
               <p className="text-sm text-muted-foreground">
-                Staff counts are visible to owners. Ask an owner for the
+                Staff management is visible to owners. Ask an owner for the
                 current roster.
               </p>
             ) : (
@@ -241,9 +244,12 @@ export default async function SetupPage() {
               </Row>
             )}
             <p className="mt-4 text-xs text-muted-foreground">
-              Staff invites are operator-managed for the pilot. A self-serve
-              invite flow is coming in a follow-up pilot issue.
+              Add staff by phone — they sign in immediately, no email or
+              password needed.
             </p>
+            <Button asChild variant="outline" size="sm" className="mt-3">
+              <Link href="/dashboard/staff">Manage staff access</Link>
+            </Button>
           </CardContent>
         </Card>
 

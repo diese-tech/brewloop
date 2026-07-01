@@ -56,6 +56,22 @@ export type LoyaltyAccount = {
   points: number;
 };
 
+export type CafeTable = {
+  id: string;
+  label: string;
+  isActive: boolean;
+};
+
+export type StaffRole = "owner" | "manager" | "barista";
+
+export type StaffMember = {
+  id: string;
+  userId: string;
+  name: string;
+  phone: string;
+  role: StaffRole;
+};
+
 export type Cafe = {
   id: string;
   name: string;

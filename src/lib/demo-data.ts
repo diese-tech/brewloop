@@ -1,4 +1,4 @@
-import type { Cafe, CafeOrder, LoyaltyAccount } from "@/lib/types";
+import type { Cafe, CafeOrder, CafeTable, LoyaltyAccount, StaffMember } from "@/lib/types";
 
 export const demoCafe: Cafe = {
   id: "00000000-0000-0000-0000-000000000001",
@@ -183,6 +183,31 @@ export const demoLoyaltyAccounts: LoyaltyAccount[] = [
     phone: "555-0102",
     visits: 3,
     points: 30,
+  },
+];
+
+export const demoTables: CafeTable[] = [
+  { id: "table-1", label: "1", isActive: true },
+  { id: "table-2", label: "2", isActive: true },
+  { id: "table-3", label: "3", isActive: true },
+  { id: "table-4", label: "4", isActive: true },
+  { id: "table-patio-1", label: "Patio 1", isActive: false },
+];
+
+export const demoStaff: StaffMember[] = [
+  {
+    id: "staff-owner",
+    userId: "demo-owner",
+    name: "Dustin",
+    phone: "555-0100",
+    role: "owner",
+  },
+  {
+    id: "staff-jordan",
+    userId: "demo-jordan",
+    name: "Jordan Lee",
+    phone: "555-0101",
+    role: "barista",
   },
 ];
 
