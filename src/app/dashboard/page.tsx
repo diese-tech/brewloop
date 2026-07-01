@@ -139,8 +139,18 @@ export default async function DashboardPage() {
   } else {
     const supabase = await getSupabaseServerClient();
     if (!supabase) throw new Error("Supabase is not configured.");
+    // There's no per-cafe timezone in the schema yet, so "today" uses a
+    // fixed US Eastern offset (the pilot cafe's location) rather than true
+    // UTC midnight — a bar/cafe open into the evening would otherwise see
+    // "today" reset mid-service (UTC midnight is 7-8pm Eastern). This
+    // doesn't auto-adjust for DST; a real per-cafe timezone is a future
+    // improvement once there's more than one pilot location.
+    const EASTERN_OFFSET_HOURS = 4;
     const todayStart = new Date();
-    todayStart.setUTCHours(0, 0, 0, 0);
+    todayStart.setUTCHours(EASTERN_OFFSET_HOURS, 0, 0, 0);
+    if (todayStart.getTime() > Date.now()) {
+      todayStart.setUTCDate(todayStart.getUTCDate() - 1);
+    }
     const todayIso = todayStart.toISOString();
 
     // cafe_users RLS only lets a non-owner read their own membership row

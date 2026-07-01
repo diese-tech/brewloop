@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+const supabaseConfigSchema = z.object({
+  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+});
+
 const productionSchema = z.object({
   APP_URL: z.string().url(),
   QR_SIGNING_SECRET: z.string().min(32),
@@ -25,6 +30,27 @@ export function getProductionConfig() {
   if (!result.success) {
     throw new Error(
       `Missing production configuration: ${result.error.issues
+        .map((issue) => issue.path.join("."))
+        .join(", ")}`,
+    );
+  }
+  return result.data;
+}
+
+/**
+ * Just the Supabase URL/service-role key, for callers (like
+ * getSupabaseAdmin()) that only need a Supabase admin client and shouldn't
+ * be blocked by unrelated missing Square/QR config. Prefer this over
+ * getProductionConfig() unless Square/QR fields are actually needed too.
+ */
+export function getSupabaseConfig() {
+  if (isDemoMode()) {
+    throw new Error("Supabase configuration is unavailable in demo mode.");
+  }
+  const result = supabaseConfigSchema.safeParse(process.env);
+  if (!result.success) {
+    throw new Error(
+      `Missing Supabase configuration: ${result.error.issues
         .map((issue) => issue.path.join("."))
         .join(", ")}`,
     );

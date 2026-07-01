@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { getProductionReadiness } from "@/lib/config";
+import { getProductionReadiness, getSupabaseConfig } from "@/lib/config";
 
 describe("getProductionReadiness", () => {
   afterEach(() => {
@@ -56,5 +56,30 @@ describe("getProductionReadiness", () => {
   it("rejects a QR signing secret shorter than 32 characters", () => {
     vi.stubEnv("QR_SIGNING_SECRET", "too-short");
     expect(getProductionReadiness().qrSigningSecret).toBe(false);
+  });
+});
+
+describe("getSupabaseConfig", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("succeeds with only Supabase env vars set, ignoring Square/QR config entirely", () => {
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://example.supabase.co");
+    vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "service");
+    // Deliberately not setting APP_URL, QR_SIGNING_SECRET, or any Square
+    // vars: a caller that only needs a Supabase admin client (like the
+    // dashboard's staff count, or the pilot ops dashboard) shouldn't be
+    // blocked by unrelated missing production config.
+    expect(() => getSupabaseConfig()).not.toThrow();
+    const config = getSupabaseConfig();
+    expect(config.NEXT_PUBLIC_SUPABASE_URL).toBe("https://example.supabase.co");
+    expect(config.SUPABASE_SERVICE_ROLE_KEY).toBe("service");
+  });
+
+  it("throws when Supabase env vars are missing", () => {
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "");
+    vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "");
+    expect(() => getSupabaseConfig()).toThrow(/Missing Supabase configuration/);
   });
 });
