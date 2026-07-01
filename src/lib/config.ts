@@ -31,3 +31,28 @@ export function getProductionConfig() {
   }
   return result.data;
 }
+
+/**
+ * Presence-only configuration status for the admin setup hub. Never throws
+ * and never returns secret values — only whether each is set, so it's safe
+ * to render directly in the UI.
+ */
+export function getProductionReadiness() {
+  const env = process.env;
+  return {
+    appUrl: Boolean(env.APP_URL),
+    qrSigningSecret: Boolean(env.QR_SIGNING_SECRET && env.QR_SIGNING_SECRET.length >= 32),
+    supabase: {
+      url: Boolean(env.NEXT_PUBLIC_SUPABASE_URL),
+      anonKey: Boolean(env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+      serviceRoleKey: Boolean(env.SUPABASE_SERVICE_ROLE_KEY),
+    },
+    square: {
+      applicationId: Boolean(env.NEXT_PUBLIC_SQUARE_APPLICATION_ID),
+      locationId: Boolean(env.NEXT_PUBLIC_SQUARE_LOCATION_ID),
+      accessToken: Boolean(env.SQUARE_ACCESS_TOKEN),
+      webhookSignatureKey: Boolean(env.SQUARE_WEBHOOK_SIGNATURE_KEY),
+      environment: env.SQUARE_ENVIRONMENT === "production" ? "production" : "sandbox",
+    },
+  };
+}

@@ -77,3 +77,28 @@ test("owner customer and reward views render", async ({ appPage }) => {
     appPage.getByText("Redeem a reward", { exact: true }),
   ).toBeVisible();
 });
+
+test("owner sees seeded launch readiness in demo mode", async ({
+  appPage,
+}) => {
+  await resetDemoState(appPage);
+  await appPage.goto("/dashboard/setup");
+
+  await expect(
+    appPage.getByRole("heading", { name: "Launch readiness" }),
+  ).toBeVisible();
+  await expect(
+    appPage.getByText("Demo mode is on.", { exact: false }),
+  ).toBeVisible();
+  await expect(appPage.getByText("Cafe profile", { exact: true })).toBeVisible();
+  await expect(
+    appPage.getByText("Demo mode always simulates an open, orderable cafe."),
+  ).toBeVisible();
+  await expect(appPage.getByText("Payments", { exact: true })).toBeVisible();
+  await expect(
+    appPage.getByText("Loyalty & SMS", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    appPage.getByText("Twilio Verify is configured directly in the"),
+  ).toBeVisible();
+});
