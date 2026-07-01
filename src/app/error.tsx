@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 
-export default function DashboardError({
+export default function AppError({
   error,
   reset,
 }: {
@@ -15,11 +15,11 @@ export default function DashboardError({
 
   return (
     <main className="mx-auto max-w-xl px-6 py-16 text-center">
-      <p className="eyebrow">The Black Rabbit · dashboard blocked</p>
+      <p className="eyebrow">The Black Rabbit · something&apos;s blocked</p>
       <h1 className="mt-2 text-4xl font-semibold tracking-tight">
         {isSupabaseUnconfigured
           ? "Supabase isn't configured yet."
-          : "Something went wrong loading the dashboard."}
+          : "Something went wrong."}
       </h1>
       <p className="mt-3 text-muted-foreground">
         {isSupabaseUnconfigured
