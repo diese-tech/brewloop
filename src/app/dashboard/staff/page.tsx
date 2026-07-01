@@ -2,7 +2,7 @@ import { StaffManager } from "@/components/staff-manager";
 import { requireCafeMember } from "@/lib/auth";
 import { isDemoMode } from "@/lib/config";
 import { demoStaff } from "@/lib/demo-data";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import type { StaffMember } from "@/lib/types";
 
 export default async function DashboardStaffPage() {
@@ -15,9 +15,11 @@ export default async function DashboardStaffPage() {
   if (demoMode) {
     staff = demoStaff;
   } else if (isOwner) {
-    const supabase = await getSupabaseServerClient();
-    if (!supabase) throw new Error("Supabase is not configured.");
-    const { data } = await supabase
+    // profiles RLS only allows reading your own row, so an owner-scoped
+    // roster of everyone else's name/phone requires the admin client.
+    // Access here is already gated by the verified owner membership above.
+    const admin = getSupabaseAdmin();
+    const { data } = await admin
       .from("cafe_users")
       .select("id, user_id, role, profiles(display_name, phone)")
       .eq("cafe_id", member.cafeId);

@@ -41,12 +41,12 @@ async function currentTables(
 }
 
 const createSchema = z.object({
-  label: z.string().trim().min(1).max(40),
+  label: z.string().trim().min(1).max(20),
 });
 
 const updateSchema = z.object({
   id: z.string().uuid(),
-  label: z.string().trim().min(1).max(40).optional(),
+  label: z.string().trim().min(1).max(20).optional(),
   isActive: z.boolean().optional(),
 });
 

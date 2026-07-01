@@ -31,7 +31,11 @@ export async function GET() {
   if (isDemoMode()) return NextResponse.json({ error: "Not available in demo mode." }, { status: 400 });
   const member = await ownerMembership();
   if (!member) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const { data, error } = await member.client
+  // profiles RLS only allows reading your own row, so an owner-scoped roster
+  // of everyone else's name/phone requires the admin client. Access here is
+  // already gated by the verified owner membership above.
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin
     .from("cafe_users")
     .select("id, user_id, role, profiles(display_name, phone)")
     .eq("cafe_id", member.cafeId);
@@ -87,6 +91,25 @@ export async function POST(request: Request) {
         throw new Error(createError?.message ?? "Unable to create staff account.");
       }
       userId = created.user.id;
+    }
+
+    if (input.role !== "owner") {
+      const { data: existingMembership } = await member.client
+        .from("cafe_users")
+        .select("role")
+        .eq("cafe_id", member.cafeId)
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (existingMembership?.role === "owner") {
+        const { count } = await member.client
+          .from("cafe_users")
+          .select("id", { count: "exact", head: true })
+          .eq("cafe_id", member.cafeId)
+          .eq("role", "owner");
+        if ((count ?? 0) <= 1) {
+          throw new Error("A cafe needs at least one owner.");
+        }
+      }
     }
 
     const { data: membership, error: membershipError } = await member.client

@@ -97,8 +97,15 @@ export function TablesManager({
       setError("Table labels must be unique.");
       return;
     }
-    const apply = () =>
+    const apply = () => {
       saveLocal(tables.map((table) => (table.id === id ? { ...table, label } : table)));
+      setLinks((current) => {
+        if (!(id in current)) return current;
+        const next = { ...current };
+        delete next[id];
+        return next;
+      });
+    };
 
     if (demoMode) {
       apply();
