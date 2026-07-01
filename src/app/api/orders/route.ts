@@ -57,12 +57,18 @@ export async function POST(request: Request) {
     const customerPhone = user?.phone ?? input.customerPhone;
     const admin = getSupabaseAdmin();
     const { data: cafe, error: cafeError } = await admin.from("cafes")
-      .select("id, square_location_id, square_tax_ids")
+      .select("id, square_location_id, square_tax_ids, accepting_orders")
       .eq("id", input.cafeId)
       .eq("slug", input.cafeSlug)
       .single();
     if (cafeError || !cafe) {
       return NextResponse.json({ error: "Cafe not found." }, { status: 404 });
+    }
+    if (!cafe.accepting_orders) {
+      return NextResponse.json(
+        { error: "This cafe isn't accepting online orders right now." },
+        { status: 409 },
+      );
     }
     const idempotencyKey = input.idempotencyKey;
     const { data: pending, error: pendingError } = await admin.rpc(
