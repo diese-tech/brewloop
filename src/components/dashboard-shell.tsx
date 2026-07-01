@@ -7,6 +7,8 @@ const links = [
   ["Overview", "/dashboard"],
   ["Setup", "/dashboard/setup"],
   ["Menu", "/dashboard/menu"],
+  ["Tables", "/dashboard/tables"],
+  ["Staff", "/dashboard/staff"],
   ["Customers", "/dashboard/customers"],
   ["Rewards", "/dashboard/rewards"],
 ];

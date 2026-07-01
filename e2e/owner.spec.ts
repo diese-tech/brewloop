@@ -107,3 +107,47 @@ test("owner sees seeded launch readiness in demo mode", async ({
     appPage.getByText("Twilio Verify is configured directly in the"),
   ).toBeVisible();
 });
+
+test("owner manages tables and QR links in demo mode", async ({
+  appPage,
+}) => {
+  await resetDemoState(appPage);
+  await appPage.goto("/dashboard/tables");
+
+  await appPage.getByLabel("New table label").fill("9");
+  await appPage.getByRole("button", { name: "Add table" }).click();
+  await expect(appPage.getByLabel("9 table label")).toBeVisible();
+
+  await appPage.getByLabel("New table label").fill(" 9 ");
+  await appPage.getByRole("button", { name: "Add table" }).click();
+  await expect(
+    appPage.getByText("Table labels must be unique."),
+  ).toBeVisible();
+
+  const tableRow = appPage
+    .locator("div.rounded-lg.border.p-4")
+    .filter({ has: appPage.getByLabel("9 table label") });
+  await tableRow.getByRole("button", { name: "Copy link" }).click();
+  await expect(tableRow.getByText(/\/cafe\/black-rabbit\/order\?t=9/)).toBeVisible();
+});
+
+test("owner manages staff access in demo mode", async ({ appPage }) => {
+  await resetDemoState(appPage);
+  await appPage.goto("/dashboard/staff");
+
+  await expect(
+    appPage.getByRole("heading", { name: "Staff access" }),
+  ).toBeVisible();
+  await expect(appPage.getByText("Dustin")).toBeVisible();
+
+  await appPage.getByLabel("Name").fill("Priya Staff");
+  await appPage.getByLabel("Phone").fill("555-0199");
+  await appPage.getByRole("button", { name: "Add staff" }).click();
+
+  await expect(appPage.getByText("Priya Staff")).toBeVisible();
+  const staffRow = appPage
+    .locator("div.rounded-lg.border.p-4")
+    .filter({ hasText: "Priya Staff" });
+  await staffRow.getByRole("button", { name: /Remove/ }).click();
+  await expect(appPage.getByText("Priya Staff")).not.toBeVisible();
+});

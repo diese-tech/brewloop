@@ -503,6 +503,38 @@ export type Database = {
           },
         ]
       }
+      tables: {
+        Row: {
+          cafe_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string
+        }
+        Insert: {
+          cafe_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label: string
+        }
+        Update: {
+          cafe_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tables_cafe_id_fkey"
+            columns: ["cafe_id"]
+            isOneToOne: false
+            referencedRelation: "cafes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
