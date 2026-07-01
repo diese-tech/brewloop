@@ -20,6 +20,23 @@ async function membership() {
   return data ? { client, cafeId: data.cafe_id } : null;
 }
 
+async function nameAlreadyExists(
+  client: Awaited<ReturnType<typeof getSupabaseServerClient>>,
+  cafeId: string,
+  name: string,
+  excludeId?: string,
+) {
+  if (!client) return false;
+  let query = client
+    .from("menu_categories")
+    .select("id")
+    .eq("cafe_id", cafeId)
+    .ilike("name", name.trim());
+  if (excludeId) query = query.neq("id", excludeId);
+  const { data } = await query.limit(1);
+  return Boolean(data?.length);
+}
+
 const createSchema = z.object({
   name: z.string().trim().min(1).max(80),
   sortOrder: z.number().int().min(0),
@@ -39,6 +56,9 @@ export async function POST(request: Request) {
   const parsed = parseOrRespond(createSchema, await request.json());
   if (parsed.response) return parsed.response;
   const input = parsed.data;
+  if (await nameAlreadyExists(member.client, member.cafeId, input.name)) {
+    return NextResponse.json({ error: "Category names must be unique." }, { status: 400 });
+  }
   const { data, error } = await member.client
     .from("menu_categories")
     .insert({ cafe_id: member.cafeId, name: input.name, sort_order: input.sortOrder })
@@ -61,6 +81,9 @@ export async function PATCH(request: Request) {
   const parsed = parseOrRespond(renameSchema, await request.json());
   if (parsed.response) return parsed.response;
   const input = parsed.data;
+  if (await nameAlreadyExists(member.client, member.cafeId, input.name, input.id)) {
+    return NextResponse.json({ error: "Category names must be unique." }, { status: 400 });
+  }
   const { error } = await member.client
     .from("menu_categories")
     .update({ name: input.name })

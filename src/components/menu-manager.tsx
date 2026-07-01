@@ -92,15 +92,21 @@ export function MenuManager({
     );
     if (demoMode) return;
     setError(null);
-    const response = await fetch("/api/menu/items", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: item.id, isActive: nextActive }),
-    });
-    if (!response.ok) {
+    try {
+      const response = await fetch("/api/menu/items", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: item.id, isActive: nextActive }),
+      });
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        throw new Error(result.error ?? "Unable to update item.");
+      }
+    } catch (caughtError) {
       saveItemsLocal(items);
-      const result = await response.json().catch(() => ({}));
-      setError(result.error ?? "Unable to update item.");
+      setError(
+        caughtError instanceof Error ? caughtError.message : "Unable to update item.",
+      );
     }
   }
 
