@@ -172,7 +172,7 @@ test("owner sees seeded pilot metrics and launch checklist in demo mode", async 
     appPage.getByText("1 payment failed today.", { exact: false }),
   ).toBeVisible();
 
-  await expect(appPage.getByText("Most ordered (all-time)")).toBeVisible();
+  await expect(appPage.getByText("Most ordered (recent)")).toBeVisible();
   await expect(appPage.getByText("The Plague")).toBeVisible();
 
   await expect(appPage.getByText("Menu ready", { exact: true })).toBeVisible();

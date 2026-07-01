@@ -374,7 +374,7 @@ export default async function DashboardPage() {
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.4fr_1fr]">
         <Card>
           <CardHeader className="flex-row items-center justify-between">
-            <CardTitle className="text-2xl">Most ordered (all-time)</CardTitle>
+            <CardTitle className="text-2xl">Most ordered (recent)</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {metrics.topItems.length === 0 ? (
