@@ -23,10 +23,15 @@ test("owner manages menu availability and customer-facing visibility", async ({
   ).toBeVisible();
 
   await appPage.getByLabel("Name", { exact: true }).fill("Midnight Mocha");
+  await expect(appPage.getByText("Customer menu preview")).toBeVisible();
+  await expect(
+    appPage.locator(".card--spine").getByText("Midnight Mocha"),
+  ).toBeVisible();
   await appPage
     .getByLabel("Description", { exact: true })
     .fill("Dark cocoa · espresso · smoked salt");
   await appPage.getByLabel("Price (USD)", { exact: true }).fill("7.25");
+  await expect(appPage.locator(".card--spine")).toContainText("$7.25");
   await appPage.getByRole("button", { name: "Save item" }).click();
 
   let itemRow = appPage
