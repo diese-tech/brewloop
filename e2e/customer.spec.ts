@@ -55,7 +55,7 @@ test.describe("customer experience", () => {
     await expect(appPage.getByText("Pickup", { exact: true })).toBeVisible();
     await expect(appPage.getByText("Total paid")).toBeVisible();
     await expect(appPage.getByText("$7.80", { exact: true })).toBeVisible();
-    await expect(appPage.getByText(/Visa ••42/i)).toBeVisible();
+    await expect(appPage.getByText(/Visa ending in 4242/i)).toBeVisible();
   });
 
   test("removes an item from the order summary", async ({ appPage }) => {
@@ -102,5 +102,55 @@ test.describe("customer experience", () => {
       appPage.getByText("Table 12", { exact: true }).last(),
     ).toBeVisible();
     await expect(appPage.getByText("Total paid")).toBeVisible();
+  });
+
+  test("opts in to loyalty at checkout and tracks the order afterward", async ({
+    appPage,
+  }) => {
+    await appPage.goto("/cafe/black-rabbit/order");
+
+    await appPage
+      .getByRole("button", { name: "Add one Be My Frankenstein" })
+      .click();
+    await appPage.getByLabel("Name", { exact: true }).fill("Loyalty Test");
+    await appPage.getByRole("button", { name: "Continue to payment" }).click();
+
+    await appPage
+      .getByLabel("Phone for rewards")
+      .fill("555-0199");
+    await appPage.getByRole("button", { name: /Pay \$/ }).click();
+
+    await expect(
+      appPage.getByRole("heading", { name: "You’re in the queue." }),
+    ).toBeVisible();
+
+    await appPage.goto("/cafe/black-rabbit/rewards");
+    await appPage.getByLabel("Phone or email").fill("555-0199");
+    await appPage.getByRole("button", { name: "Join / check rewards" }).click();
+    await expect(appPage.getByText(/Welcome, Loyalty Test\./)).toBeVisible();
+  });
+
+  test("tracks a placed order on the order-status page", async ({
+    appPage,
+  }) => {
+    await appPage.goto("/cafe/black-rabbit/order");
+
+    await appPage
+      .getByRole("button", { name: "Add one Be My Frankenstein" })
+      .click();
+    await appPage.getByLabel("Name", { exact: true }).fill("Status Test");
+    await appPage.getByRole("button", { name: "Continue to payment" }).click();
+    await appPage.getByRole("button", { name: /Pay \$/ }).click();
+
+    await appPage.getByRole("link", { name: "Track your order" }).click();
+
+    await expect(
+      appPage.getByRole("heading", { name: /Order #BR-\d+/ }),
+    ).toBeVisible();
+    await expect(appPage.getByText("Order received")).toBeVisible();
+    await expect(appPage.getByText("Paid", { exact: true })).toBeVisible();
+    await expect(
+      appPage.getByText("1× Be My Frankenstein"),
+    ).toBeVisible();
   });
 });

@@ -105,7 +105,7 @@ Defined in [`src/app/globals.css`](../src/app/globals.css) under
 | `moon-stamp` | — | `--filled`, `--empty` | One dot in a 10-stamp loyalty row. |
 | `brand-mark` | `__moon` | — | The Black Rabbit logo lockup (crescent + wordmark). |
 | `card` (modifier-only, applied to shadcn `Card`) | — | `--parchment`, `--spine` | Card skins: parchment potion-label card, book-spine rule card. |
-| `status-dot` | — | `--new`, `--making`, `--ready`, `--completed` | Staff order board column status indicator. |
+| `status-dot` | — | `--new`, `--making`, `--ready`, `--completed`, `--cancelled` | Order status indicator, used on the staff board and the customer order-status page. |
 
 ## Examples
 

@@ -162,6 +162,8 @@ export async function POST(request: Request) {
       taxCents,
       tipCents: order.tip_cents,
       totalCents: payment.totalCents,
+      cardBrand: payment.cardBrand,
+      cardLast4: payment.cardLast4,
       items: order.order_items.map((item) => ({
         menuItemId: item.menu_item_id ?? item.id,
         nameSnapshot: item.name_snapshot,

@@ -103,6 +103,12 @@ export async function createSquareOrderAndPayment(input: {
     paymentId: paymentBody.payment.id as string,
     status: paymentBody.payment.status as string,
     totalCents: Number(paymentBody.payment.total_money?.amount ?? 0),
+    cardBrand: paymentBody.payment.card_details?.card?.card_brand as
+      | string
+      | undefined,
+    cardLast4: paymentBody.payment.card_details?.card?.last_4 as
+      | string
+      | undefined,
   };
 }
 
