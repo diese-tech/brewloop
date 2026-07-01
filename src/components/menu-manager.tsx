@@ -58,6 +58,11 @@ export function MenuManager({
           storedCategories.map((category) => [category.id, category.name]),
         ),
       );
+      setCategoryId((current) =>
+        storedCategories.some((category) => category.id === current)
+          ? current
+          : (storedCategories[0]?.id ?? ""),
+      );
     };
     sync();
     window.addEventListener(STORE_EVENT, sync);
