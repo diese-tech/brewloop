@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 
 const links = [
   ["Overview", "/dashboard"],
+  ["Setup", "/dashboard/setup"],
   ["Menu", "/dashboard/menu"],
   ["Customers", "/dashboard/customers"],
   ["Rewards", "/dashboard/rewards"],
