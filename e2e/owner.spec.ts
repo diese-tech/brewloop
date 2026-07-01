@@ -7,9 +7,12 @@ test("owner manages menu availability and customer-facing visibility", async ({
   await appPage.goto("/dashboard");
 
   await expect(
-    appPage.getByRole("heading", { name: "Good evening, Dustin." }),
+    appPage.getByRole("heading", { name: "Pilot operations" }),
   ).toBeVisible();
-  await expect(appPage.getByText("SALES TODAY")).toBeVisible();
+  await expect(appPage.getByText("REVENUE TODAY")).toBeVisible();
+  await expect(
+    appPage.getByText("Launch checklist", { exact: true }),
+  ).toBeVisible();
 
   await appPage.goto("/dashboard/menu");
   await appPage.getByLabel("New category name").fill("Seasonal");
@@ -150,4 +153,32 @@ test("owner manages staff access in demo mode", async ({ appPage }) => {
     .filter({ hasText: "Priya Staff" });
   await staffRow.getByRole("button", { name: /Remove/ }).click();
   await expect(appPage.getByText("Priya Staff")).not.toBeVisible();
+});
+
+test("owner sees seeded pilot metrics and launch checklist in demo mode", async ({
+  appPage,
+}) => {
+  await resetDemoState(appPage);
+  await appPage.goto("/dashboard");
+
+  await expect(
+    appPage.getByRole("heading", { name: "Pilot operations" }),
+  ).toBeVisible();
+
+  // Demo seed: 4 orders (2 paid, 1 refunded, 1 failed), 1 failed payment.
+  await expect(appPage.getByText("ORDERS TODAY")).toBeVisible();
+  await expect(appPage.getByText("FAILED PAYMENTS TODAY")).toBeVisible();
+  await expect(
+    appPage.getByText("1 payment failed today.", { exact: false }),
+  ).toBeVisible();
+
+  await expect(appPage.getByText("Most ordered (recent)")).toBeVisible();
+  await expect(appPage.getByText("The Plague")).toBeVisible();
+
+  await expect(appPage.getByText("Menu ready", { exact: true })).toBeVisible();
+  await expect(appPage.getByText("Demo walkthrough")).toBeVisible();
+  await expect(
+    appPage.getByText("Sandbox payment test"),
+  ).toBeVisible();
+  await expect(appPage.getByText("Manual step").first()).toBeVisible();
 });

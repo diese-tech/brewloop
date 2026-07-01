@@ -1,4 +1,4 @@
-import type { OrderItem } from "@/lib/types";
+import type { CafeOrder, OrderItem } from "@/lib/types";
 
 export function formatCurrency(cents: number) {
   return new Intl.NumberFormat("en-US", {
@@ -20,6 +20,20 @@ export function dollarsToCents(value: string | number) {
     throw new Error("Price must be a valid number.");
   }
   return Math.round(amount * 100);
+}
+
+/**
+ * An order that fell out of the normal new -> making -> ready -> completed
+ * pipeline: cancelled, or paid-then-failed/refunded. Shared by the staff
+ * board's "Problems" column and the ops dashboard's counts so both agree on
+ * what counts as a problem order.
+ */
+export function isProblemOrder(order: CafeOrder) {
+  return (
+    order.status === "cancelled" ||
+    order.paymentStatus === "failed" ||
+    order.paymentStatus === "refunded"
+  );
 }
 
 export function loyaltyProgress(visits: number, threshold = 10) {
