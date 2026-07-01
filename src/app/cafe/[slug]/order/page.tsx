@@ -6,6 +6,7 @@ import { OrderBuilder } from "@/components/order-builder";
 import { isDemoMode } from "@/lib/config";
 import { getCafeBySlug } from "@/lib/data";
 import { verifyTableSignature } from "@/lib/qr";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function OrderPage({
   params,
@@ -34,7 +35,21 @@ export default async function OrderPage({
       sig &&
       verifyTableSignature(slug, t, sig, process.env.QR_SIGNING_SECRET ?? "")
     ) {
-      validTable = t;
+      const supabase = await getSupabaseServerClient();
+      const { data: tableRow } = supabase
+        ? await supabase
+            .from("tables")
+            .select("is_active")
+            .eq("cafe_id", cafe.id)
+            .eq("label", t)
+            .maybeSingle()
+        : { data: null };
+      if (tableRow && !tableRow.is_active) {
+        tableError =
+          "This table isn’t available right now. Ask a staff member for help, or order for pickup below.";
+      } else {
+        validTable = t;
+      }
     } else {
       tableError =
         "This table link isn’t valid or has expired. Ask a staff member for a fresh QR code, or order for pickup below.";

@@ -293,7 +293,9 @@ export function TablesManager({
                   variant="outline"
                   size="sm"
                   disabled={
-                    busyId === table.id || (!demoMode && !qrSigningSecretConfigured)
+                    busyId === table.id ||
+                    !table.isActive ||
+                    (!demoMode && !qrSigningSecretConfigured)
                   }
                   onClick={() => void generateLink(table)}
                 >

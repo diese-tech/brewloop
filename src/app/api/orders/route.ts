@@ -70,6 +70,24 @@ export async function POST(request: Request) {
         { status: 409 },
       );
     }
+    if (input.orderType === "table") {
+      // A table not present in the registry at all is treated as active
+      // (not every cafe has registered every table yet); an explicitly
+      // deactivated table blocks new orders even with a still-valid,
+      // previously-generated or printed signed link.
+      const { data: tableRow } = await admin
+        .from("tables")
+        .select("is_active")
+        .eq("cafe_id", input.cafeId)
+        .eq("label", input.tableNumber)
+        .maybeSingle();
+      if (tableRow && !tableRow.is_active) {
+        return NextResponse.json(
+          { error: "This table isn't available right now. Ask staff for help." },
+          { status: 409 },
+        );
+      }
+    }
     const idempotencyKey = input.idempotencyKey;
     const { data: pending, error: pendingError } = await admin.rpc(
       "create_pending_order",
