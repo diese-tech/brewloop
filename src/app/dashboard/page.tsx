@@ -12,7 +12,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatCurrency, isProblemOrder } from "@/lib/commerce";
+import { formatCurrency } from "@/lib/commerce";
 import { requireCafeMember } from "@/lib/auth";
 import { getProductionReadiness, isDemoMode } from "@/lib/config";
 import { demoCafe, demoLoyaltyAccounts, demoOrders, demoStaff, demoTables } from "@/lib/demo-data";
@@ -102,12 +102,15 @@ export default async function DashboardPage() {
   let hasExtraStaff = false;
   let recentLoyalty: Array<{ id: string; name: string; visits: number }> = [];
   let cafeSlug = demoCafe.slug;
+  let cafeSquareLocationId: string | null = null;
 
   if (demoMode) {
     const paidOrders = demoOrders.filter((order) => order.paymentStatus === "paid");
     const revenueTodayCents = paidOrders.reduce((sum, order) => sum + order.totalCents, 0);
     const activeOrders = demoOrders.filter(
-      (order) => ["new", "making", "ready"].includes(order.status) && !isProblemOrder(order),
+      (order) =>
+        ["new", "making", "ready"].includes(order.status) &&
+        order.paymentStatus === "paid",
     ).length;
     const failedPayments = demoOrders.filter((order) => order.paymentStatus === "failed").length;
     const itemTotals = new Map<string, number>();
@@ -173,7 +176,11 @@ export default async function DashboardPage() {
       { count: staffCount },
       { data: loyaltyRows },
     ] = await Promise.all([
-      supabase.from("cafes").select("slug").eq("id", member.cafeId).single(),
+      supabase
+        .from("cafes")
+        .select("slug, square_location_id")
+        .eq("id", member.cafeId)
+        .single(),
       supabase
         .from("orders")
         .select("total_cents, payment_status")
@@ -238,7 +245,7 @@ export default async function DashboardPage() {
     const paidToday = (ordersToday ?? []).filter((order) => order.payment_status === "paid");
     const revenueTodayCents = paidToday.reduce((sum, order) => sum + order.total_cents, 0);
     const activeOrders = (activeOrderRows ?? []).filter(
-      (order) => order.payment_status !== "failed" && order.payment_status !== "refunded",
+      (order) => order.payment_status === "paid",
     ).length;
     const failedPayments = (ordersToday ?? []).filter(
       (order) => order.payment_status === "failed",
@@ -264,6 +271,7 @@ export default async function DashboardPage() {
     hasTables = (tableCount ?? 0) > 0;
     hasExtraStaff = (staffCount ?? 0) > 1;
     cafeSlug = cafeRow?.slug ?? cafeSlug;
+    cafeSquareLocationId = cafeRow?.square_location_id ?? null;
     recentLoyalty = (loyaltyRows ?? []).map((row) => ({
       id: row.id,
       name: row.customers?.name ?? "Guest",
@@ -283,7 +291,7 @@ export default async function DashboardPage() {
       status:
         demoMode ||
         (readiness.square.applicationId &&
-          readiness.square.locationId &&
+          (readiness.square.locationId || Boolean(cafeSquareLocationId)) &&
           readiness.square.accessToken &&
           readiness.square.webhookSignatureKey)
           ? "done"
