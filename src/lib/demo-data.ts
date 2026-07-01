@@ -118,6 +118,51 @@ export const demoOrders: CafeOrder[] = [
     ],
     createdAt: new Date(Date.now() - 11 * 60_000).toISOString(),
   },
+  {
+    id: "BL-1039",
+    cafeId: demoCafe.id,
+    customerName: "Priya",
+    customerPhone: "555-0104",
+    status: "cancelled",
+    orderType: "pickup",
+    notes: "",
+    subtotalCents: 600,
+    tipCents: 0,
+    paymentStatus: "refunded",
+    totalCents: 600,
+    items: [
+      {
+        menuItemId: "ghost-malone",
+        nameSnapshot: "Ghost Malone",
+        quantity: 1,
+        unitPriceCents: 600,
+      },
+    ],
+    createdAt: new Date(Date.now() - 26 * 60_000).toISOString(),
+  },
+  {
+    id: "BL-1038",
+    cafeId: demoCafe.id,
+    customerName: "Sam",
+    customerPhone: "555-0105",
+    status: "new",
+    orderType: "table",
+    tableNumber: "4",
+    notes: "",
+    subtotalCents: 575,
+    tipCents: 0,
+    paymentStatus: "failed",
+    totalCents: 575,
+    items: [
+      {
+        menuItemId: "count-chocula",
+        nameSnapshot: "Count Chocula",
+        quantity: 1,
+        unitPriceCents: 575,
+      },
+    ],
+    createdAt: new Date(Date.now() - 31 * 60_000).toISOString(),
+  },
 ];
 
 export const demoLoyaltyAccounts: LoyaltyAccount[] = [

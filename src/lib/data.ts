@@ -54,7 +54,7 @@ export async function getStaffOrders(cafeId: string): Promise<CafeOrder[]> {
     .from("orders")
     .select("*, order_items(*)")
     .eq("cafe_id", cafeId)
-    .eq("payment_status", "paid")
+    .in("payment_status", ["paid", "failed", "refunded"])
     .order("created_at", { ascending: false });
   if (error) throw error;
   return (data ?? []).map((order) => ({

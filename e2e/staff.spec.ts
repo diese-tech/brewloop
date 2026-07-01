@@ -61,3 +61,21 @@ test("staff receives and completes a paid customer order", async ({
       .filter({ hasText: orderId }),
   ).toBeVisible();
 });
+
+test("staff board surfaces cancelled and payment-failed orders as problems", async ({
+  appPage,
+}) => {
+  await resetDemoState(appPage);
+  await appPage.goto("/staff/orders");
+
+  const problemsColumn = appPage.locator("section").filter({
+    has: appPage.getByRole("heading", { name: "Problems" }),
+  });
+  await expect(problemsColumn).toContainText("Priya");
+  await expect(problemsColumn).toContainText("Cancelled");
+  await expect(problemsColumn).toContainText("Sam");
+  await expect(problemsColumn).toContainText("payment failed");
+  await expect(
+    problemsColumn.locator('[data-slot="card"]').getByRole("button"),
+  ).toHaveCount(0);
+});
