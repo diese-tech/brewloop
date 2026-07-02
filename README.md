@@ -54,6 +54,20 @@ See `.env.example` for the complete list.
 The service-role key must remain server-only. Never expose it through a
 `NEXT_PUBLIC_` variable or initialize a service-role client in browser code.
 
+## Deploying to Vercel
+
+Set environment variables on the Vercel project before expecting a working
+deploy:
+
+- Demo showcase deploy: set `BREWLOOP_DEMO_MODE=true` and nothing else.
+- Production pilot deploy: set `BREWLOOP_DEMO_MODE=false` plus every variable
+  in `.env.example` (Supabase, Square, application URL, QR signing secret).
+
+The build itself succeeds without any environment variables because the
+auth-gated dashboard and staff routes render per request instead of at build
+time. With no configuration, those routes show the runtime configuration
+error state until the variables above are added.
+
 ## Supabase setup
 
 1. Create a Supabase project.
