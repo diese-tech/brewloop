@@ -29,10 +29,11 @@ These gaps remain unresolved in the current BrewLoop product.
 
 ## Product depth
 
-- Owner menu management and analytics still use prototype data; the first
-  production slice wires customer ordering, loyalty, and the staff board.
-- Loyalty uses one fixed ten-visit rule. Configurable rules, redemption, and
-  transaction history are deferred.
+- Loyalty uses one fixed ten-visit rule. Redemption exists (owner/manager
+  lookup + redeem on `/dashboard/rewards`); configurable rules, points-based
+  redemption, a transaction history UI, and a barista redeem flow on the
+  staff board are deferred.
+- Customer CSV export from `/dashboard/customers` is deferred.
 - Menu categories can be added, renamed, and deleted when empty; drag-and-drop
   reordering is deferred.
 - Menu items can be added, edited, activated, and hidden; permanent deletion is
@@ -49,5 +50,10 @@ These gaps remain unresolved in the current BrewLoop product.
 ## Testing
 
 - Credential-gated database and provider integration coverage remains minimal.
-- The checked-in Playwright suite covers the browser-storage demo flows.
-- Owner customer synchronization and reward redemption remain `fixme`.
+  The production reward-redemption path (`/api/loyalty/members`) is untested
+  against a live Supabase project.
+- The checked-in Playwright suite covers the browser-storage demo flows,
+  including owner customer synchronization and reward redemption.
+- The owner/staff auth-redirect tests remain `fixme` because the Playwright
+  suite runs in demo mode, where `requireCafeMember` short-circuits to a fake
+  owner; they need a production-mode test harness.

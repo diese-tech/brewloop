@@ -213,7 +213,30 @@ Every Codex session begins by reading `CODEX.md` and `docs/DECISIONS.md`.
 
 Every Codex session ends by updating `CODEX.md`, `docs/DECISIONS.md`, relevant ADRs/topical docs, or `docs/KNOWN_GAPS.md` when the session changes durable context.
 
-### 16. Prototype design brief
+### 16. Reward redemption spends a full punch card
+
+Redeeming a reward requires a full card (ten visits under the fixed pilot
+rule), subtracts the threshold from the account's visits and the matching
+accrued points, and records a `loyalty_transactions` row with type `redeem`.
+
+Why:
+
+- Leftover visits keep counting toward the next reward, matching how
+  `loyaltyProgress` already reports progress modulo the threshold.
+- The transaction log preserves an audit trail for the owner without a
+  dedicated history UI in v1.
+
+Constraints:
+
+- Redemption is owner/manager-only via the dashboard rewards page. A barista
+  redeem flow on the staff board is deferred.
+- In production the spend and the transaction row commit atomically through
+  the `redeem_loyalty_reward` RPC, which locks the account row, re-checks the
+  caller's owner/manager role, and re-validates eligibility server-side.
+- Configurable thresholds and points-based redemption remain deferred to
+  v1.5.
+
+### 17. Prototype design brief
 
 Prototype/UI polish work should follow `design.md`.
 

@@ -75,7 +75,7 @@ test("owner customer and reward views render", async ({ appPage }) => {
 
   await appPage.goto("/dashboard/customers");
   await expect(
-    appPage.getByRole("heading", { name: "126 regulars & counting." }),
+    appPage.getByRole("heading", { name: "3 regulars & counting." }),
   ).toBeVisible();
   await expect(appPage.getByText("Jordan Lee")).toBeVisible();
 
@@ -84,6 +84,51 @@ test("owner customer and reward views render", async ({ appPage }) => {
   await expect(
     appPage.getByText("Redeem a reward", { exact: true }),
   ).toBeVisible();
+});
+
+test("new loyalty signups appear in the owner customer list", async ({
+  appPage,
+}) => {
+  await resetDemoState(appPage);
+  await appPage.goto("/cafe/black-rabbit/rewards");
+  await appPage.getByLabel("Phone or email").fill("owner-sync@example.com");
+  await appPage.getByLabel("Name (optional)").fill("Owner Sync Test");
+  await appPage.getByRole("button", { name: "Join / check rewards" }).click();
+
+  await appPage.goto("/dashboard/customers");
+  await expect(
+    appPage.getByRole("heading", { name: "4 regulars & counting." }),
+  ).toBeVisible();
+  await expect(appPage.getByText("Owner Sync Test")).toBeVisible();
+});
+
+test("owner can look up and redeem a reward", async ({ appPage }) => {
+  await resetDemoState(appPage);
+  await appPage.goto("/dashboard/rewards");
+
+  // Jordan is 4 moons short: the redeem action is visible but locked.
+  await appPage.getByPlaceholder("Phone or email").fill("jordan@example.com");
+  await appPage.getByRole("button", { name: "Look up member" }).click();
+  await expect(appPage.getByText("Jordan Lee")).toBeVisible();
+  const redeemButton = appPage.getByRole("button", { name: "Redeem reward" });
+  await expect(redeemButton).toBeVisible();
+  await expect(redeemButton).toBeDisabled();
+  await expect(
+    appPage.getByText("4 more moons to the next reward."),
+  ).toBeVisible();
+
+  // Rowan holds a full card and can redeem it.
+  await appPage.getByPlaceholder("Phone or email").fill("rowan@example.com");
+  await appPage.getByRole("button", { name: "Look up member" }).click();
+  await expect(appPage.getByText("Rowan Page")).toBeVisible();
+  await expect(redeemButton).toBeEnabled();
+  await redeemButton.click();
+
+  await expect(
+    appPage.getByText(/Reward redeemed — Rowan Page/),
+  ).toBeVisible();
+  await expect(appPage.getByText("2 visits", { exact: false })).toBeVisible();
+  await expect(redeemButton).toBeDisabled();
 });
 
 test("owner sees seeded launch readiness in demo mode", async ({
