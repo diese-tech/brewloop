@@ -184,6 +184,15 @@ export const demoLoyaltyAccounts: LoyaltyAccount[] = [
     visits: 3,
     points: 30,
   },
+  {
+    id: "loyalty-3",
+    cafeId: demoCafe.id,
+    name: "Rowan Page",
+    email: "rowan@example.com",
+    phone: "555-0103",
+    visits: 12,
+    points: 120,
+  },
 ];
 
 export const demoTables: CafeTable[] = [

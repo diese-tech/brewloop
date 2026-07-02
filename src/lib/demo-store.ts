@@ -23,6 +23,7 @@ const KEYS = {
   menu: "brewloop-demo-menu",
   tables: "brewloop-demo-tables",
   staff: "brewloop-demo-staff",
+  redeemed: "brewloop-demo-redeemed",
 };
 
 export const STORE_EVENT = "brewloop-store-change";
@@ -59,4 +60,6 @@ export const demoStore = {
   setTables: (tables: CafeTable[]) => write(KEYS.tables, tables),
   getStaff: () => read<StaffMember[]>(KEYS.staff, demoStaff),
   setStaff: (staff: StaffMember[]) => write(KEYS.staff, staff),
+  getRedeemedCount: () => read<number>(KEYS.redeemed, 0),
+  setRedeemedCount: (count: number) => write(KEYS.redeemed, count),
 };

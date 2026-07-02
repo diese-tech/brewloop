@@ -1,76 +1,59 @@
-import { Gift, Search } from "lucide-react";
+import { RewardsManager } from "@/components/rewards-manager";
+import { requireCafeMember } from "@/lib/auth";
+import { loyaltyProgress } from "@/lib/commerce";
+import { isDemoMode } from "@/lib/config";
+import { demoLoyaltyAccounts } from "@/lib/demo-data";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+function readyRewards(visitCounts: number[]) {
+  return visitCounts.reduce(
+    (total, visits) => total + loyaltyProgress(visits).rewardsEarned,
+    0,
+  );
+}
 
-const metrics = [
-  ["Members", "126"],
-  ["Rewards earned", "34"],
-  ["Redeemed", "27"],
-  ["Outstanding", "7"],
-];
+export default async function DashboardRewardsPage() {
+  const member = await requireCafeMember(["owner", "manager"]);
+  const demoMode = isDemoMode();
 
-export default function DashboardRewardsPage() {
+  let members: number;
+  let ready: number;
+  let redeemed: number;
+
+  if (demoMode) {
+    const visitCounts = demoLoyaltyAccounts.map((account) => account.visits);
+    members = visitCounts.length;
+    ready = readyRewards(visitCounts);
+    redeemed = 0;
+  } else {
+    const supabase = await getSupabaseServerClient();
+    if (!supabase) throw new Error("Supabase is not configured.");
+    const [accountsResult, redeemResult] = await Promise.all([
+      supabase
+        .from("loyalty_accounts")
+        .select("visits")
+        .eq("cafe_id", member.cafeId),
+      supabase
+        .from("loyalty_transactions")
+        .select("id, loyalty_accounts!inner(cafe_id)", {
+          count: "exact",
+          head: true,
+        })
+        .eq("type", "redeem")
+        .eq("loyalty_accounts.cafe_id", member.cafeId),
+    ]);
+    if (accountsResult.error) throw new Error(accountsResult.error.message);
+    if (redeemResult.error) throw new Error(redeemResult.error.message);
+    const visitCounts = (accountsResult.data ?? []).map((row) => row.visits);
+    members = visitCounts.length;
+    ready = readyRewards(visitCounts);
+    redeemed = redeemResult.count ?? 0;
+  }
+
   return (
-    <div>
-      <p className="eyebrow">Loyalty program · active</p>
-      <h1 className="mt-2 text-5xl font-semibold tracking-tight">Rewards</h1>
-
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {metrics.map(([label, value]) => (
-          <Card key={label}>
-            <CardHeader>
-              <CardTitle className="eyebrow">{label}</CardTitle>
-            </CardHeader>
-            <CardContent className="font-heading text-5xl font-semibold">
-              {value}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <Card>
-          <CardHeader>
-            <Gift className="size-5 text-[var(--brass-bright)]" />
-            <CardTitle className="mt-2 text-3xl">Visit moon card</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="max-w-xl text-muted-foreground">
-              One moon per visit. A full card earns one drink on the house.
-            </p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              {Array.from({ length: 10 }).map((_, index) => (
-                <span key={index} className="moon-stamp moon-stamp--filled" />
-              ))}
-              <Badge className="ml-2 self-center">→ 1 free drink</Badge>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">Redeem a reward</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Input placeholder="Phone or email" />
-              <Button className="w-full">
-                <Search /> Look up member
-              </Button>
-            </CardContent>
-          </Card>
-          <Card className="border-dashed bg-transparent shadow-none">
-            <CardContent className="pt-5 text-sm text-muted-foreground">
-              <p className="eyebrow mb-3">Coming in v1.5</p>
-              Points-per-order · configurable thresholds · manual visit
-              adjustment
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
+    <RewardsManager
+      demoMode={demoMode}
+      initialMetrics={{ members, ready, redeemed }}
+    />
   );
 }
