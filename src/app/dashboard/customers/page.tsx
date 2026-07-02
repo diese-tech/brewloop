@@ -1,69 +1,36 @@
-import { Download } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { CustomersPanel } from "@/components/customers-panel";
+import { requireCafeMember } from "@/lib/auth";
+import { isDemoMode } from "@/lib/config";
 import { demoLoyaltyAccounts } from "@/lib/demo-data";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
+import type { LoyaltyAccount } from "@/lib/types";
 
-export default function DashboardCustomersPage() {
-  return (
-    <div>
-      <p className="eyebrow">Customer relationships · no app required</p>
-      <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
-        <h1 className="text-5xl font-semibold tracking-tight">
-          126 regulars & counting.
-        </h1>
-        <Button variant="outline" disabled>
-          <Download /> Export CSV · soon
-        </Button>
-      </div>
-      <Card className="mt-8">
-        <CardContent className="pt-2">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Customer</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Visits</TableHead>
-                <TableHead>Last seen</TableHead>
-                <TableHead>Reward progress</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {demoLoyaltyAccounts.map((customer, index) => (
-                <TableRow key={customer.id}>
-                  <TableCell>
-                    <span className="flex items-center gap-3 font-heading text-xl">
-                      <span className="moon-stamp moon-stamp--filled size-8" aria-hidden="true" />
-                      {customer.name}
-                    </span>
-                  </TableCell>
-                  <TableCell className="font-mono text-xs">
-                    {customer.email || customer.phone}
-                  </TableCell>
-                  <TableCell className="font-mono">{customer.visits}</TableCell>
-                  <TableCell>{index ? "Yesterday" : "Today"}</TableCell>
-                  <TableCell>
-                    <div className="h-2 w-28 overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full rounded-full bg-[var(--brass-bright)]"
-                        style={{ width: `${customer.visits * 10}%` }}
-                      />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </div>
-  );
+export default async function DashboardCustomersPage() {
+  const member = await requireCafeMember(["owner", "manager"]);
+  const demoMode = isDemoMode();
+
+  let accounts: LoyaltyAccount[];
+  if (demoMode) {
+    accounts = demoLoyaltyAccounts;
+  } else {
+    const supabase = await getSupabaseServerClient();
+    if (!supabase) throw new Error("Supabase is not configured.");
+    const { data, error } = await supabase
+      .from("customers")
+      .select("id, name, email, phone, loyalty_accounts(visits, points)")
+      .eq("cafe_id", member.cafeId)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    accounts = (data ?? []).map((row) => ({
+      id: row.id,
+      cafeId: member.cafeId,
+      name: row.name ?? "Bookbar regular",
+      email: row.email ?? "",
+      phone: row.phone ?? "",
+      visits: row.loyalty_accounts?.[0]?.visits ?? 0,
+      points: row.loyalty_accounts?.[0]?.points ?? 0,
+    }));
+  }
+
+  return <CustomersPanel demoMode={demoMode} initialAccounts={accounts} />;
 }
