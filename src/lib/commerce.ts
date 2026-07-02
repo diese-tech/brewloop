@@ -36,11 +36,38 @@ export function isProblemOrder(order: CafeOrder) {
   );
 }
 
-export function loyaltyProgress(visits: number, threshold = 10) {
+export const REWARD_VISIT_THRESHOLD = 10;
+
+/** Points added per visit by the accrual path (apply_paid_order). */
+export const POINTS_PER_VISIT = 10;
+
+export function loyaltyProgress(visits: number, threshold = REWARD_VISIT_THRESHOLD) {
   const normalized = Math.max(0, visits);
   return {
     current: normalized % threshold,
     threshold,
     rewardsEarned: Math.floor(normalized / threshold),
+  };
+}
+
+export function canRedeemReward(visits: number, threshold = REWARD_VISIT_THRESHOLD) {
+  return visits >= threshold;
+}
+
+/**
+ * Redeeming a reward spends one full punch card: visits drop by the
+ * threshold and points drop by the matching accrued amount, so remaining
+ * visits keep counting toward the next reward.
+ */
+export function applyRedemption(
+  account: { visits: number; points: number },
+  threshold = REWARD_VISIT_THRESHOLD,
+) {
+  if (!canRedeemReward(account.visits, threshold)) {
+    throw new Error("Not enough visits to redeem a reward.");
+  }
+  return {
+    visits: account.visits - threshold,
+    points: Math.max(0, account.points - threshold * POINTS_PER_VISIT),
   };
 }

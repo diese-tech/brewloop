@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  applyRedemption,
   calculateOrderTotal,
+  canRedeemReward,
   dollarsToCents,
   isProblemOrder,
   loyaltyProgress,
@@ -56,6 +58,37 @@ describe("commerce helpers", () => {
       threshold: 10,
       rewardsEarned: 1,
     });
+  });
+
+  it("allows redemption only at or past the visit threshold", () => {
+    expect(canRedeemReward(9)).toBe(false);
+    expect(canRedeemReward(10)).toBe(true);
+    expect(canRedeemReward(11)).toBe(true);
+    expect(canRedeemReward(4, 4)).toBe(true);
+  });
+
+  it("spends one full punch card on redemption", () => {
+    expect(applyRedemption({ visits: 10, points: 100 })).toEqual({
+      visits: 0,
+      points: 0,
+    });
+    expect(applyRedemption({ visits: 16, points: 160 })).toEqual({
+      visits: 6,
+      points: 60,
+    });
+  });
+
+  it("never drops points below zero on redemption", () => {
+    expect(applyRedemption({ visits: 12, points: 40 })).toEqual({
+      visits: 2,
+      points: 0,
+    });
+  });
+
+  it("rejects redemption below the threshold", () => {
+    expect(() => applyRedemption({ visits: 9, points: 90 })).toThrow(
+      "Not enough visits",
+    );
   });
 
   it("treats cancelled, failed, and refunded orders as problems", () => {
