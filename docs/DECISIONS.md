@@ -230,8 +230,9 @@ Constraints:
 
 - Redemption is owner/manager-only via the dashboard rewards page. A barista
   redeem flow on the staff board is deferred.
-- Server-side eligibility validation and a concurrency guard prevent a card
-  from being spent twice.
+- In production the spend and the transaction row commit atomically through
+  the `redeem_loyalty_reward` RPC, which locks the account row, re-checks the
+  caller's owner/manager role, and re-validates eligibility server-side.
 - Configurable thresholds and points-based redemption remain deferred to
   v1.5.
 

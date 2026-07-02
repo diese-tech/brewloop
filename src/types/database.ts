@@ -565,6 +565,15 @@ export type Database = {
         }
         Returns: Json
       }
+      redeem_loyalty_reward: {
+        Args: {
+          p_account_id: string
+        }
+        Returns: {
+          new_visits: number
+          new_points: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

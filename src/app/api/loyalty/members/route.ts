@@ -2,11 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { parseOrRespond } from "@/lib/api-validation";
-import {
-  applyRedemption,
-  canRedeemReward,
-  REWARD_VISIT_THRESHOLD,
-} from "@/lib/commerce";
+import { REWARD_VISIT_THRESHOLD } from "@/lib/commerce";
 import { isDemoMode } from "@/lib/config";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -91,66 +87,50 @@ export async function POST(request: Request) {
   const parsed = parseOrRespond(redeemSchema, await request.json());
   if (parsed.response) return parsed.response;
 
-  const { data: account, error: accountError } = await member.client
-    .from("loyalty_accounts")
-    .select("id, visits, points")
-    .eq("id", parsed.data.accountId)
-    .eq("cafe_id", member.cafeId)
-    .maybeSingle();
-  if (accountError) {
-    return NextResponse.json({ error: accountError.message }, { status: 400 });
+  // The RPC locks the account row and spends the card plus records the
+  // redeem transaction in one database transaction. It re-checks the
+  // caller's owner/manager role against the account's cafe.
+  const { data: redeemed, error: redeemError } = await member.client.rpc(
+    "redeem_loyalty_reward",
+    { p_account_id: parsed.data.accountId },
+  );
+  if (redeemError) {
+    const message = redeemError.message ?? "";
+    if (message.includes("not found")) {
+      return NextResponse.json(
+        { error: "Loyalty account not found." },
+        { status: 404 },
+      );
+    }
+    if (message.includes("Not enough visits")) {
+      return NextResponse.json(
+        {
+          error: `Not enough visits yet — ${REWARD_VISIT_THRESHOLD} moons redeem a reward.`,
+        },
+        { status: 400 },
+      );
+    }
+    if (message.includes("owner or manager")) {
+      return NextResponse.json(
+        { error: "Only an owner or manager can redeem rewards." },
+        { status: 403 },
+      );
+    }
+    return NextResponse.json({ error: message }, { status: 400 });
   }
+
+  const account = redeemed?.[0];
   if (!account) {
     return NextResponse.json(
-      { error: "Loyalty account not found." },
-      { status: 404 },
-    );
-  }
-  if (!canRedeemReward(account.visits)) {
-    return NextResponse.json(
-      {
-        error: `Not enough visits yet — ${REWARD_VISIT_THRESHOLD} moons redeem a reward.`,
-      },
+      { error: "Unable to redeem reward." },
       { status: 400 },
     );
   }
-
-  const next = applyRedemption(account);
-  // Guard on the visits we read so two concurrent redemptions can't both
-  // spend the same punch card.
-  const { data: updated, error: updateError } = await member.client
-    .from("loyalty_accounts")
-    .update({ visits: next.visits, points: next.points })
-    .eq("id", account.id)
-    .eq("visits", account.visits)
-    .select("id, visits, points")
-    .maybeSingle();
-  if (updateError) {
-    return NextResponse.json({ error: updateError.message }, { status: 400 });
-  }
-  if (!updated) {
-    return NextResponse.json(
-      { error: "This card just changed — look the member up again." },
-      { status: 409 },
-    );
-  }
-
-  const { error: transactionError } = await member.client
-    .from("loyalty_transactions")
-    .insert({
-      account_id: account.id,
-      type: "redeem",
-      points: next.points - account.points,
-      reason: "Reward redeemed: free drink",
-    });
-  if (transactionError) {
-    return NextResponse.json(
-      { error: transactionError.message },
-      { status: 400 },
-    );
-  }
-
   return NextResponse.json({
-    account: { accountId: updated.id, visits: updated.visits, points: updated.points },
+    account: {
+      accountId: parsed.data.accountId,
+      visits: account.new_visits,
+      points: account.new_points,
+    },
   });
 }
