@@ -243,3 +243,22 @@ Prototype/UI polish work should follow `design.md`.
 `design.md` is the source of truth for the next prototyping pass covering landing, cafe microsite, customer order flow, staff board, owner dashboard, menu management, customers, and rewards dashboard screens.
 
 The design pass must preserve current pilot boundaries: no payments, no Telegram, no native app, no inventory, and no POS integration.
+
+### 18. Hosted demo showcase requires an explicit opt-in
+
+Production deployments still reject `BREWLOOP_DEMO_MODE=true` by default, but
+setting `BREWLOOP_ALLOW_HOSTED_DEMO=true` alongside it allows the demo
+showcase to run on the production domain on purpose.
+
+Why:
+
+- During the pre-pilot sales phase there are no provider credentials, and the
+  branded demo at a clean URL is the product being pitched.
+- Requiring a second deliberate switch preserves the original safety goal: the
+  simulated-payment, browser-storage demo can never reach the production
+  domain by accident.
+
+Constraint:
+
+- The override must be removed when the real pilot backend goes live so demo
+  mode and production credentials stay mutually exclusive.

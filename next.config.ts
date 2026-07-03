@@ -1,11 +1,19 @@
 import type { NextConfig } from "next";
 
+// Demo mode on a production deployment requires a second, explicit opt-in so
+// the browser-storage demo (simulated payments, no persistence) can never
+// reach the real domain by accident. Hosting the demo showcase there on
+// purpose — e.g. while pitching the pilot before credentials exist — is
+// allowed by also setting BREWLOOP_ALLOW_HOSTED_DEMO=true.
 if (
   process.env.BREWLOOP_DEMO_MODE === "true" &&
+  process.env.BREWLOOP_ALLOW_HOSTED_DEMO !== "true" &&
   (process.env.VERCEL_ENV === "production" ||
     process.env.npm_lifecycle_event === "start")
 ) {
-  throw new Error("BREWLOOP_DEMO_MODE cannot run in production.");
+  throw new Error(
+    "BREWLOOP_DEMO_MODE cannot run in production. Set BREWLOOP_ALLOW_HOSTED_DEMO=true to intentionally host the demo showcase.",
+  );
 }
 
 const nextConfig: NextConfig = {
