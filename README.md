@@ -59,7 +59,10 @@ The service-role key must remain server-only. Never expose it through a
 Set environment variables on the Vercel project before expecting a working
 deploy:
 
-- Demo showcase deploy: set `BREWLOOP_DEMO_MODE=true` and nothing else.
+- Demo showcase deploy: set `BREWLOOP_DEMO_MODE=true` and
+  `BREWLOOP_ALLOW_HOSTED_DEMO=true`. The second variable is a deliberate
+  opt-in: without it, production deployments refuse to build in demo mode so
+  the simulated-payment demo can never reach the real domain by accident.
 - Production pilot deploy: set `BREWLOOP_DEMO_MODE=false` plus every variable
   in `.env.example` (Supabase, Square, application URL, QR signing secret).
 

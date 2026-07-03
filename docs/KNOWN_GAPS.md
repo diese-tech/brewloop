@@ -7,7 +7,9 @@ These gaps remain unresolved in the current BrewLoop product.
 - Supabase, Twilio Verify, and Square Sandbox credentials are not available, so
   the live production path has not yet been exercised.
 - Credential-free development uses explicit demo mode. Production rejects demo
-  mode and missing provider configuration.
+  mode and missing provider configuration, unless the deploy also sets the
+  explicit `BREWLOOP_ALLOW_HOSTED_DEMO=true` opt-in to host the demo showcase
+  on the production domain during the pre-pilot sales phase.
 - Run `RUN_INTEGRATION_TESTS=true npm test` after applying migrations and adding
   provider credentials.
 
