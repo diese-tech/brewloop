@@ -102,3 +102,8 @@ process real payments. It excludes Telegram, native apps, inventory, payroll,
 deep POS integrations, and complex marketing campaigns.
 See `CODEX.md` and the ADRs in `docs/ADR/` for the durable product and
 architecture decisions.
+
+
+## Production readiness inventory
+
+Review the [project-scoped 146-item readiness checklist](docs/production-readiness-checklist.md) alongside the existing [production readiness strategy](docs/PRODUCTION_READINESS.md). The checklist is an applicability and evidence inventory, not a claim that everything is required or already complete.
